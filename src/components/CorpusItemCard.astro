@@ -1,0 +1,89 @@
+---
+import { t } from "../i18n";
+import type { CorpusItem } from "../lib/editions";
+import { formatFullDate } from "../lib/dates";
+import { renderInline } from "../lib/md";
+import { withBase } from "../lib/url";
+import SourceBadge from "./SourceBadge.astro";
+
+interface Props {
+  item: CorpusItem;
+}
+
+const { item } = Astro.props;
+const strings = t();
+const editionHref = withBase(
+  `/edizioni/${item.editionId}/${item.anchor ? `#${item.anchor}` : ""}`,
+);
+---
+
+<article class="corpus-item">
+  <p class="kicker corpus-meta">
+    <span>{strings.filters.kind[item.kind]}</span>
+    <a class="corpus-date" href={editionHref}>
+      {formatFullDate(item.editionDate)}
+    </a>
+  </p>
+  {
+    item.title ? (
+      <h3 class="corpus-title">
+        <a href={editionHref}>{item.title}</a>
+      </h3>
+    ) : (
+      <p class="corpus-text" set:html={renderInline(item.text)} />
+    )
+  }
+  <ul class="source-list" role="list">
+    {item.sources.map((source) => (
+      <li>
+        <SourceBadge source={source} />
+      </li>
+    ))}
+  </ul>
+</article>
+
+<style>
+  .corpus-item {
+    border-bottom: 1px solid var(--hairline);
+    padding-block: var(--space-2);
+  }
+
+  .corpus-meta {
+    display: flex;
+    gap: var(--space-2);
+    color: var(--ink-faint);
+    margin: 0 0 var(--space-1);
+  }
+
+  .corpus-date {
+    color: inherit;
+  }
+
+  .corpus-title {
+    font-size: var(--text-title);
+    margin-bottom: var(--space-1);
+  }
+
+  .corpus-title a {
+    text-decoration: none;
+  }
+
+  .corpus-title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+  }
+
+  .corpus-text {
+    font-size: var(--text-body-sm);
+    margin-bottom: var(--space-1);
+  }
+
+  .source-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+import { t } from "../i18n";
+import type { EmergentTerm } from "../lib/editions";
+import { withBase } from "../lib/url";
+
+interface Props {
+  terms: EmergentTerm[];
+  base: "categoria" | "fonte";
+  emptyNote?: string;
+}
+
+const { terms, base, emptyNote } = Astro.props;
+const strings = t();
+---
+
+{
+  terms.length > 0 ? (
+    <ul class="term-list" role="list">
+      {terms.map((term) => (
+        <li class="term-row">
+          <a class="term-link" href={withBase(`/${base}/${term.slug}/`)}>
+            <span class="term-label">{term.label}</span>
+            <span class="term-count kicker">
+              {strings.filters.items(term.count)}
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p class="term-empty">{emptyNote}</p>
+  )
+}
+
+<style>
+  .term-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .term-row {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .term-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    text-decoration: none;
+  }
+
+  .term-label {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" var(--display-width);
+    font-weight: var(--display-weight);
+    font-size: var(--text-headline);
+    text-transform: capitalize;
+  }
+
+  .term-link:hover .term-label {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+  }
+
+  .term-count {
+    color: var(--ink-faint);
+  }
+
+  .term-empty {
+    color: var(--ink-muted);
+    padding-block: var(--space-3);
+  }
+</style>

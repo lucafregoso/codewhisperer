@@ -50,9 +50,22 @@ const it = {
   },
   filters: {
     category: "Categoria",
+    categories: "Categorie",
     source: "Fonte",
+    sources: "Fonti",
     uncategorized: "Senza categoria",
     allEditions: "Tutte le edizioni",
+    items: (count: number) => (count === 1 ? "1 item" : `${count} item`),
+    noCategories:
+      "Nessuna categoria ancora: arrivano con le prossime edizioni di Hermes.",
+    kind: {
+      story: "In primo piano",
+      radar: "Radar",
+      "slow-feed": "Dal feed lento",
+    } as Record<string, string>,
+    pageOf: (current: number, total: number) => `Pagina ${current} di ${total}`,
+    previousPage: "Pagina precedente",
+    nextPage: "Pagina successiva",
   },
   externalNewTab: "(si apre in una nuova scheda)",
 } as const;
