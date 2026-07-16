@@ -69,12 +69,12 @@ export interface RawEdition {
 
 /** Errore di parse con posizione: fa fallire la build con file e riga. */
 export class EditionParseError extends Error {
-  constructor(
-    message: string,
-    /** Riga 1-based nel file sorgente */
-    public readonly line: number,
-  ) {
+  /** Riga 1-based nel file sorgente */
+  readonly line: number;
+
+  constructor(message: string, line: number) {
     super(message);
     this.name = "EditionParseError";
+    this.line = line;
   }
 }

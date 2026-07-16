@@ -2,9 +2,9 @@ import {
   AGGREGATOR_HOSTS,
   AGGREGATOR_SLUGS,
   SOURCE_ALIASES,
-} from "../../data/source-aliases";
-import { slugify } from "./slug";
-import { EditionParseError, type SourceRef } from "./types";
+} from "../../data/source-aliases.ts";
+import { slugify } from "./slug.ts";
+import { EditionParseError, type SourceRef } from "./types.ts";
 
 function canonicalSlug(label: string): string {
   return SOURCE_ALIASES[label.trim().toLowerCase()] ?? slugify(label);

@@ -75,10 +75,28 @@ il tema è lo stesso.
 Le edizioni senza categorie restano valide: gli item finiscono in
 "senza categoria" e restano filtrabili per fonte e data.
 
+## Come pubblicare (per Hermes)
+
+Un solo comando dalla radice del repo:
+
+```bash
+scripts/publish-edition.sh /percorso/rassegna.md            # pubblica
+scripts/publish-edition.sh /percorso/rassegna.md --dry-run  # solo validazione
+```
+
+Lo script: valida col parser reale (errore con file:riga se il formato
+non torna), copia in `input/`, committa su `master`
+(`content: edizione YYYY-MM-DD`), pusha (se esiste il remote) e
+riallinea `develop`. Con working tree sporco si rifiuta di partire.
+
+Per il push dal VPS serve una **deploy key** con permesso di scrittura
+sul repo GitHub (setup una tantum, vedi README).
+
 ## Cosa succede dopo il drop
 
-1. Commit su `master` (`content: edizione YYYY-MM-DD`) e push.
-2. La CI parsa e valida: se il file è malformato la build fallisce
-   (errore con file e riga) e il sito resta all'edizione precedente.
-3. A build verde il deploy pubblica e l'edizione con la data più recente
-   diventa automaticamente la homepage.
+1. Il push su `master` fa partire il deploy GitHub Pages.
+2. La build riparsa e rivalida tutto: se qualcosa è malformato la build
+   fallisce e il sito resta all'edizione precedente. Il sito non
+   regredisce mai.
+3. A build verde l'edizione con la data più recente diventa
+   automaticamente la homepage.

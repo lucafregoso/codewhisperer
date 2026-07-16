@@ -1,6 +1,6 @@
-import { parseItalianDate } from "./italian-date";
-import { slugify } from "./slug";
-import { parseSourceEntry, parseSourcesLine } from "./sources";
+import { parseItalianDate } from "./italian-date.ts";
+import { slugify } from "./slug.ts";
+import { parseSourceEntry, parseSourcesLine } from "./sources.ts";
 import {
   EditionParseError,
   type Coverage,
@@ -8,7 +8,7 @@ import {
   type RawEdition,
   type SlowFeed,
   type Story,
-} from "./types";
+} from "./types.ts";
 
 /** Sezioni riconosciute per keyword: le emoji negli H2 possono variare. */
 type SectionKey = "lead" | "radar" | "slowFeed" | "coverage";
