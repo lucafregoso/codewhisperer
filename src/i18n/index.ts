@@ -38,6 +38,13 @@ const it = {
     radar: "Radar",
     slowFeed: "Dal feed lento",
     coverage: "Nota di copertura",
+    coverageLabels: {
+      sourcesRead: "Fonti lette",
+      itemsCollected: "Item raccolti",
+      itemsPublished: "Storie pubblicate",
+      itemsDiscarded: "Scartati di proposito",
+      unreachable: "Irraggiungibili",
+    },
     sources: "Fonti",
     via: "via",
     previous: "Edizione precedente",

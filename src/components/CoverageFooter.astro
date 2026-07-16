@@ -16,26 +16,27 @@ const strings = t();
   </h2>
   <dl class="coverage-stats">
     <div class="stat">
-      <dt>Fonti lette</dt>
+      <dt>{strings.edition.coverageLabels.sourcesRead}</dt>
       <dd>{coverage.sourcesRead}/{coverage.sourcesTotal}</dd>
     </div>
     <div class="stat">
-      <dt>Item raccolti</dt>
+      <dt>{strings.edition.coverageLabels.itemsCollected}</dt>
       <dd>{coverage.itemsCollected}</dd>
     </div>
     <div class="stat">
-      <dt>Storie pubblicate</dt>
+      <dt>{strings.edition.coverageLabels.itemsPublished}</dt>
       <dd>{coverage.itemsPublished}</dd>
     </div>
     <div class="stat">
-      <dt>Scartati di proposito</dt>
+      <dt>{strings.edition.coverageLabels.itemsDiscarded}</dt>
       <dd>{coverage.itemsDiscarded}</dd>
     </div>
   </dl>
   {
     coverage.unreachable.length > 0 && (
       <p class="coverage-unreachable">
-        Irraggiungibili: {coverage.unreachable.join(", ")}.
+        {strings.edition.coverageLabels.unreachable}:{" "}
+        {coverage.unreachable.join(", ")}.
       </p>
     )
   }

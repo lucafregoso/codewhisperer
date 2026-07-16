@@ -46,7 +46,7 @@ const canonical = new URL(withBase(canonicalPath), Astro.site);
     {structuredData.map((data) => (
       <script
         type="application/ld+json"
-        set:html={JSON.stringify(data)}
+        set:html={JSON.stringify(data).replace(/</g, "\\u003c")}
       />
     ))}
     <script is:inline>
