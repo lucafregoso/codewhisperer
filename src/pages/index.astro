@@ -4,11 +4,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../data/site";
 import { t } from "../i18n";
 import { formatFullDate } from "../lib/dates";
-import { getLatestEdition } from "../lib/editions";
+import { getEditionsSorted } from "../lib/editions";
 import { editionStructuredData } from "../lib/structured-data";
 
 const strings = t();
-const edition = await getLatestEdition();
+const editions = await getEditionsSorted();
+const edition = editions[0];
+if (!edition) {
+  throw new Error("Nessuna edizione in input/: impossibile costruire il sito");
+}
+const prev = editions[1];
 const title = strings.edition.editionOf(formatFullDate(edition.data.date));
 ---
 
@@ -18,5 +23,5 @@ const title = strings.edition.editionOf(formatFullDate(edition.data.date));
   canonicalPath="/"
   structuredData={editionStructuredData(edition, Astro.site)}
 >
-  <EditionLayout edition={edition} />
+  <EditionLayout edition={edition} prev={prev} />
 </BaseLayout>

@@ -8,17 +8,24 @@ import { editionStructuredData } from "../../lib/structured-data";
 
 export async function getStaticPaths() {
   const editions = await getEditionsSorted();
-  return editions.map((edition) => ({
+  return editions.map((edition, index) => ({
     params: { date: edition.id },
-    props: { edition },
+    // Ordinate dalla più recente: prev = più vecchia, next = più recente.
+    props: {
+      edition,
+      prev: editions[index + 1],
+      next: editions[index - 1],
+    },
   }));
 }
 
 interface Props {
   edition: Edition;
+  prev?: Edition | undefined;
+  next?: Edition | undefined;
 }
 
-const { edition } = Astro.props;
+const { edition, prev, next } = Astro.props;
 const strings = t();
 const title = strings.edition.editionOf(formatFullDate(edition.data.date));
 ---
@@ -29,5 +36,5 @@ const title = strings.edition.editionOf(formatFullDate(edition.data.date));
   canonicalPath={`/edizioni/${edition.id}/`}
   structuredData={editionStructuredData(edition, Astro.site)}
 >
-  <EditionLayout edition={edition} />
+  <EditionLayout edition={edition} prev={prev} next={next} />
 </BaseLayout>

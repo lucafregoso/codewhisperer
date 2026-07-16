@@ -1,0 +1,83 @@
+---
+import { t } from "../i18n";
+import type { Edition } from "../lib/editions";
+import { formatFullDate } from "../lib/dates";
+import { withBase } from "../lib/url";
+
+interface Props {
+  prev?: Edition | undefined;
+  next?: Edition | undefined;
+}
+
+const { prev, next } = Astro.props;
+const strings = t();
+---
+
+{
+  (prev || next) && (
+    <nav class="edition-nav shell" aria-label={strings.nav.editions}>
+      {prev ? (
+        <a class="edition-nav-link" href={withBase(`/edizioni/${prev.id}/`)}>
+          <span class="kicker" aria-hidden="true">←</span>
+          <span>
+            <span class="kicker">{strings.edition.previous}</span>
+            <span class="edition-nav-date">
+              {formatFullDate(prev.data.date)}
+            </span>
+          </span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {next && (
+        <a
+          class="edition-nav-link edition-nav-link--next"
+          href={withBase(`/edizioni/${next.id}/`)}
+        >
+          <span>
+            <span class="kicker">{strings.edition.next}</span>
+            <span class="edition-nav-date">
+              {formatFullDate(next.data.date)}
+            </span>
+          </span>
+          <span class="kicker" aria-hidden="true">→</span>
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .edition-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: var(--space-3);
+    border-top: var(--rule-weight) solid var(--rule);
+  }
+
+  .edition-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+  }
+
+  .edition-nav-link--next {
+    text-align: right;
+    margin-left: auto;
+  }
+
+  .edition-nav-date {
+    display: block;
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" var(--display-width);
+    font-weight: var(--display-weight);
+    font-size: var(--text-title);
+  }
+
+  .edition-nav-link:hover .edition-nav-date {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+  }
+</style>
