@@ -1,0 +1,66 @@
+---
+import { t } from "../i18n";
+import type { Edition } from "../lib/editions";
+import { renderBlock } from "../lib/md";
+import CategoryKicker from "./CategoryKicker.astro";
+import SourceBadge from "./SourceBadge.astro";
+
+interface Props {
+  slowFeed: NonNullable<Edition["data"]["slowFeed"]>;
+}
+
+const { slowFeed } = Astro.props;
+const strings = t();
+---
+
+<section class="slow-feed" aria-labelledby="slow-feed-heading">
+  <h2 class="kicker slow-kicker" id="slow-feed-heading">
+    {strings.edition.slowFeed}
+  </h2>
+  <CategoryKicker categories={slowFeed.categories} />
+  <h3 class="slow-title">
+    <span class="slow-quote" aria-hidden="true">“</span>{slowFeed.title}<span
+      class="slow-quote"
+      aria-hidden="true">”</span>
+  </h3>
+  {slowFeed.author && <p class="slow-author">di {slowFeed.author}</p>}
+  <div class="slow-body" set:html={renderBlock(slowFeed.body)} />
+  <SourceBadge source={slowFeed.source} />
+</section>
+
+<style>
+  .slow-feed {
+    border-top: var(--rule-weight) solid var(--rule);
+    border-bottom: var(--rule-weight) solid var(--rule);
+    padding-block: var(--space-3);
+  }
+
+  .slow-kicker {
+    margin: 0 0 var(--space-2);
+  }
+
+  .slow-title {
+    font-family: var(--font-serif);
+    font-variation-settings: normal;
+    font-weight: 600;
+    font-style: italic;
+    font-size: var(--text-headline);
+    max-width: var(--measure);
+    margin-bottom: var(--space-1);
+  }
+
+  .slow-quote {
+    color: var(--ink-faint);
+  }
+
+  .slow-author {
+    font-family: var(--font-display);
+    font-size: var(--text-body-sm);
+    color: var(--ink-muted);
+  }
+
+  .slow-body {
+    color: var(--ink-muted);
+    margin-block: var(--space-2);
+  }
+</style>

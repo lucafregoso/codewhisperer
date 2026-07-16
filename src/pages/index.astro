@@ -1,36 +1,22 @@
 ---
+import EditionLayout from "../components/EditionLayout.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../data/site";
 import { t } from "../i18n";
+import { formatFullDate } from "../lib/dates";
+import { getLatestEdition } from "../lib/editions";
+import { editionStructuredData } from "../lib/structured-data";
 
 const strings = t();
+const edition = await getLatestEdition();
+const title = strings.edition.editionOf(formatFullDate(edition.data.date));
 ---
 
-<BaseLayout canonicalPath="/">
-  <main id="main">
-    <header class="masthead shell">
-      <p class="kicker">{strings.placeholder.kicker}</p>
-      <h1 class="masthead-title">{site.name}</h1>
-      <hr class="section-rule" />
-      <p class="deck">{strings.placeholder.deck}</p>
-    </header>
-  </main>
+<BaseLayout
+  title={title}
+  description={site.meta.description}
+  canonicalPath="/"
+  structuredData={editionStructuredData(edition, Astro.site)}
+>
+  <EditionLayout edition={edition} />
 </BaseLayout>
-
-<style>
-  .masthead {
-    padding-block: var(--space-4);
-  }
-
-  .masthead-title {
-    font-size: var(--text-hero);
-    text-transform: uppercase;
-    margin-block: var(--space-1) var(--space-2);
-  }
-
-  .deck {
-    font-size: var(--text-deck);
-    color: var(--ink-muted);
-    margin-top: var(--space-2);
-  }
-</style>

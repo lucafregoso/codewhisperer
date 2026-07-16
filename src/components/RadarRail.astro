@@ -1,0 +1,66 @@
+---
+import { t } from "../i18n";
+import type { RadarItem } from "../lib/editions";
+import { renderInline } from "../lib/md";
+import SourceBadge from "./SourceBadge.astro";
+
+interface Props {
+  items: RadarItem[];
+}
+
+const { items } = Astro.props;
+const strings = t();
+---
+
+{
+  items.length > 0 && (
+    <section class="radar" aria-labelledby="radar-title">
+      <h2 class="kicker radar-title" id="radar-title">
+        {strings.edition.radar}
+      </h2>
+      <ul class="radar-list" role="list">
+        {items.map((item) => (
+          <li class="radar-item">
+            <p class="radar-text" set:html={renderInline(item.text)} />
+            <SourceBadge source={item.source} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .radar {
+    background: var(--surface);
+    padding: var(--space-3) var(--space-2);
+    border-top: var(--rule-weight) solid var(--rule);
+  }
+
+  .radar-title {
+    margin: 0 0 var(--space-2);
+  }
+
+  .radar-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .radar-item {
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+  }
+
+  .radar-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .radar-text {
+    font-size: var(--text-body-sm);
+    margin-bottom: var(--space-1);
+  }
+</style>

@@ -55,12 +55,6 @@ const it = {
     allEditions: "Tutte le edizioni",
   },
   externalNewTab: "(si apre in una nuova scheda)",
-  placeholder: {
-    kicker: "Presto in edicola",
-    deck:
-      "Il magazine delle rassegne quotidiane di Hermes è in costruzione. " +
-      "La prima edizione arriva con la prossima build.",
-  },
 } as const;
 
 export const translations = { it } as const;
