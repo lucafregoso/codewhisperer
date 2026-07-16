@@ -41,8 +41,18 @@ const strings = t();
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-2);
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
     padding-block: var(--space-2);
+  }
+
+  @media (max-width: 48rem) {
+    .masthead-nav {
+      flex-basis: 100%;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: var(--space-1);
+    }
   }
 
   .brand {

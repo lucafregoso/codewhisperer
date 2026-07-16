@@ -32,9 +32,9 @@ const grid = sorted.slice(3);
 
 <main id="main" data-pagefind-body>
   <header class="edition-header shell">
-    <p class="kicker edition-date">
+    <h1 class="edition-date">
       {strings.edition.editionOf(formatFullDate(edition.data.date))}
-    </p>
+    </h1>
     <p class="edition-tldr" set:html={renderInline(edition.data.tldr)} />
   </header>
 
@@ -96,6 +96,9 @@ const grid = sorted.slice(3);
   }
 
   .edition-date {
+    font-size: var(--text-headline);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
     margin: 0 0 var(--space-1);
   }
 
