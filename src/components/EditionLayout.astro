@@ -4,6 +4,7 @@ import type { Edition } from "../lib/editions";
 import { formatFullDate } from "../lib/dates";
 import { renderInline } from "../lib/md";
 import CoverageFooter from "./CoverageFooter.astro";
+import EditionNav from "./EditionNav.astro";
 import MastHead from "./MastHead.astro";
 import RadarRail from "./RadarRail.astro";
 import SlowFeedFeature from "./SlowFeedFeature.astro";
@@ -11,9 +12,11 @@ import StoryCard from "./StoryCard.astro";
 
 interface Props {
   edition: Edition;
+  prev?: Edition | undefined;
+  next?: Edition | undefined;
 }
 
-const { edition } = Astro.props;
+const { edition, prev, next } = Astro.props;
 const strings = t();
 const { stories, radar, slowFeed, coverage } = edition.data;
 
@@ -83,6 +86,8 @@ const grid = sorted.slice(3);
       </div>
     )
   }
+
+  <EditionNav prev={prev} next={next} />
 </main>
 
 <style>

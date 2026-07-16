@@ -11,6 +11,15 @@ const strings = t();
   <div class="masthead-bar shell">
     <a class="brand" href={withBase("/")}>{site.name}</a>
     <nav class="masthead-nav" aria-label={strings.nav.home}>
+      <a
+        class="masthead-link kicker"
+        href={withBase("/edizioni/")}
+        aria-current={
+          Astro.url.pathname === withBase("/edizioni/") ? "page" : undefined
+        }
+      >
+        {strings.nav.editions}
+      </a>
       <slot name="nav" />
       <ThemeToggle />
     </nav>
@@ -41,5 +50,16 @@ const strings = t();
     display: flex;
     align-items: center;
     gap: var(--space-2);
+  }
+
+  .masthead-link {
+    text-decoration: none;
+  }
+
+  .masthead-link:hover,
+  .masthead-link[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
   }
 </style>
