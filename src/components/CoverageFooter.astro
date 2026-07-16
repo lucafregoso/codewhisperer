@@ -10,7 +10,7 @@ const { coverage } = Astro.props;
 const strings = t();
 ---
 
-<footer class="coverage" aria-labelledby="coverage-title">
+<footer class="coverage full-bleed" aria-labelledby="coverage-title">
   <h2 class="kicker coverage-title" id="coverage-title">
     {strings.edition.coverage}
   </h2>
@@ -44,9 +44,7 @@ const strings = t();
 
 <style>
   .coverage {
-    background: var(--surface);
-    border-top: var(--rule-weight) solid var(--rule);
-    padding: var(--space-3) var(--space-2);
+    padding-block: var(--space-3);
     font-family: var(--font-display);
   }
 

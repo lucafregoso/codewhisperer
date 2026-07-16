@@ -14,7 +14,7 @@ const strings = t();
 
 {
   items.length > 0 && (
-    <section class="radar" aria-labelledby="radar-title">
+    <section class="radar full-bleed" aria-labelledby="radar-title">
       <h2 class="kicker radar-title" id="radar-title">
         {strings.edition.radar}
       </h2>
@@ -32,9 +32,7 @@ const strings = t();
 
 <style>
   .radar {
-    background: var(--surface);
-    padding: var(--space-3) var(--space-2);
-    border-top: var(--rule-weight) solid var(--rule);
+    padding-block: var(--space-3);
   }
 
   .radar-title {
@@ -45,18 +43,28 @@ const strings = t();
     list-style: none;
     margin: 0;
     padding: 0;
-    display: grid;
-    gap: var(--space-2);
+    columns: 1;
+    column-gap: var(--space-3);
+    column-rule: 1px solid var(--hairline);
   }
 
   .radar-item {
+    break-inside: avoid;
     border-bottom: 1px solid var(--hairline);
     padding-bottom: var(--space-2);
+    margin-bottom: var(--space-2);
   }
 
-  .radar-item:last-child {
-    border-bottom: 0;
-    padding-bottom: 0;
+  @media (min-width: 48rem) {
+    .radar-list {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .radar-list {
+      columns: 3;
+    }
   }
 
   .radar-text {

@@ -85,6 +85,22 @@ video {
   margin: 0;
 }
 
+/* Banda editoriale a tutta larghezza: il background sfora la shell
+   (html ha overflow-x: clip), il contenuto resta allineato. */
+.full-bleed {
+  position: relative;
+}
+
+.full-bleed::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline: calc(50% - 50vw);
+  background: var(--surface);
+  border-top: var(--rule-weight) solid var(--rule);
+  z-index: -1;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
