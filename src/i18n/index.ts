@@ -67,6 +67,11 @@ const it = {
     previousPage: "Pagina precedente",
     nextPage: "Pagina successiva",
   },
+  search: {
+    noscript:
+      "La ricerca richiede JavaScript. In alternativa, sfoglia per data, " +
+      "categoria o fonte:",
+  },
   externalNewTab: "(si apre in una nuova scheda)",
 } as const;
 

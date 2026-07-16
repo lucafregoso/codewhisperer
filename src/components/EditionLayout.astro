@@ -30,7 +30,7 @@ const grid = sorted.slice(3);
   <slot name="nav" slot="nav" />
 </MastHead>
 
-<main id="main">
+<main id="main" data-pagefind-body>
   <header class="edition-header shell">
     <p class="kicker edition-date">
       {strings.edition.editionOf(formatFullDate(edition.data.date))}
