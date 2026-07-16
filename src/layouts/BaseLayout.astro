@@ -1,0 +1,71 @@
+---
+import "@fontsource-variable/archivo";
+import "@fontsource-variable/source-serif-4";
+import "../styles/global.css";
+import { site } from "../data/site";
+import { t } from "../i18n";
+import { withBase } from "../lib/url";
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
+  structuredData?: Record<string, unknown>[];
+}
+
+const {
+  title,
+  description = site.meta.description,
+  canonicalPath = "/",
+  structuredData = [],
+} = Astro.props;
+
+const strings = t();
+const pageTitle = title
+  ? site.meta.titlePattern.replace("%s", title)
+  : `${site.name} — ${site.tagline}`;
+const canonical = new URL(withBase(canonicalPath), Astro.site);
+---
+
+<!doctype html>
+<html lang={site.meta.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={site.meta.themeColor} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href={withBase("/sitemap-index.xml")} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={site.meta.ogLocale} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {structuredData.map((data) => (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(data)}
+      />
+    ))}
+    <script is:inline>
+      // Pre-paint: applica il tema salvato prima del primo render per
+      // evitare il flash. Il contenuto non dipende da questo script.
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var dark =
+            stored === "dark" ||
+            (!stored &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          if (dark) document.documentElement.dataset.theme = "dark";
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{strings.nav.skipToContent}</a>
+    <slot />
+  </body>
+</html>

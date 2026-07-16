@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { site } from "../data/site";
+import { t } from "../i18n";
+
+const strings = t();
+---
+
+<BaseLayout canonicalPath="/">
+  <main id="main">
+    <header class="masthead shell">
+      <p class="kicker">{strings.placeholder.kicker}</p>
+      <h1 class="masthead-title">{site.name}</h1>
+      <hr class="section-rule" />
+      <p class="deck">{strings.placeholder.deck}</p>
+    </header>
+  </main>
+</BaseLayout>
+
+<style>
+  .masthead {
+    padding-block: var(--space-4);
+  }
+
+  .masthead-title {
+    font-size: var(--text-hero);
+    text-transform: uppercase;
+    margin-block: var(--space-1) var(--space-2);
+  }
+
+  .deck {
+    font-size: var(--text-deck);
+    color: var(--ink-muted);
+    margin-top: var(--space-2);
+  }
+</style>
