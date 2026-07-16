@@ -1,0 +1,50 @@
+---
+import { t } from "../i18n";
+
+const strings = t();
+---
+
+<button
+  type="button"
+  class="theme-toggle"
+  data-theme-toggle
+  aria-label={strings.theme.toggle}
+>
+  <span class="theme-icon" aria-hidden="true"></span>
+</button>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  button?.addEventListener("click", () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === "dark" ? "light" : "dark";
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem("theme", next);
+    } catch {
+      /* il tema resta di sessione */
+    }
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    inline-size: 2rem;
+    block-size: 2rem;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    display: inline-grid;
+    place-items: center;
+    padding: 0;
+  }
+
+  .theme-icon {
+    inline-size: 0.9rem;
+    block-size: 0.9rem;
+    border-radius: 50%;
+    background: linear-gradient(90deg, var(--ink) 50%, transparent 50%);
+    border: 1px solid var(--ink);
+  }
+</style>

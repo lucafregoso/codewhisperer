@@ -1,0 +1,85 @@
+name: Deploy to GitHub Pages
+
+# Con git flow, master è "ciò che è live": il deploy parte solo da qui.
+# I drop di contenuto (nuove edizioni in input/) committano direttamente su
+# master; se il parse fallisce, la build fallisce e il sito non regredisce.
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build production site
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_URL: ${{ vars.SITE_URL || 'https://lucafregoso.github.io' }}
+      BASE_PATH: ${{ vars.BASE_PATH || '/codewhisperer/' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Check Astro and TypeScript
+        run: pnpm run check
+
+      - name: Run unit tests (parser)
+        run: pnpm run test:unit
+
+      - name: Build production site
+        run: pnpm run build
+
+      # I drop di contenuto vanno dritti su master (costituzione §10):
+      # anche il deploy esegue l'e2e completo — il sito non regredisce mai.
+      - name: Run end-to-end tests
+        run: pnpm test
+
+      - name: Upload GitHub Pages artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    if: github.ref == 'refs/heads/master'
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

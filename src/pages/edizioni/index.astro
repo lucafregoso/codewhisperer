@@ -1,0 +1,132 @@
+---
+import MastHead from "../../components/MastHead.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { t } from "../../i18n";
+import { formatFullDate, formatMonthYear } from "../../lib/dates";
+import { getEditionsSorted, type Edition } from "../../lib/editions";
+import { withBase } from "../../lib/url";
+
+const strings = t();
+const editions = await getEditionsSorted();
+
+const byMonth = new Map<string, Edition[]>();
+for (const edition of editions) {
+  const key = formatMonthYear(edition.data.date);
+  const group = byMonth.get(key) ?? [];
+  group.push(edition);
+  byMonth.set(key, group);
+}
+---
+
+<BaseLayout title={strings.archive.title} canonicalPath="/edizioni/">
+  <MastHead />
+  <main id="main">
+    <header class="archive-header shell">
+      <h1 class="archive-title">{strings.archive.title}</h1>
+    </header>
+    <div class="shell">
+      {
+        [...byMonth.entries()].map(([month, group]) => (
+          <section class="archive-month" aria-label={month}>
+            <h2 class="kicker archive-month-title">{month}</h2>
+            <ul class="archive-list" role="list">
+              {group.map((edition) => (
+                <li class="archive-row">
+                  <a
+                    class="archive-link"
+                    href={withBase(`/edizioni/${edition.id}/`)}
+                  >
+                    <span class="archive-date">
+                      {formatFullDate(edition.data.date)}
+                    </span>
+                    <span class="archive-tldr">{edition.data.tldr}</span>
+                    <span class="archive-count kicker">
+                      {strings.archive.stories(edition.data.stories.length)}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))
+      }
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .archive-header {
+    padding-block: var(--space-3);
+  }
+
+  .archive-title {
+    font-size: var(--text-hero);
+    text-transform: uppercase;
+  }
+
+  .archive-month {
+    border-top: var(--rule-weight) solid var(--rule);
+    padding-block: var(--space-2) var(--space-3);
+  }
+
+  .archive-month-title {
+    margin: 0 0 var(--space-2);
+    color: var(--ink-muted);
+  }
+
+  .archive-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .archive-row {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .archive-row:last-child {
+    border-bottom: 0;
+  }
+
+  .archive-link {
+    display: grid;
+    grid-template-columns: 12rem 1fr auto;
+    gap: var(--space-2);
+    align-items: baseline;
+    padding-block: var(--space-2);
+    text-decoration: none;
+  }
+
+  .archive-date {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" var(--display-width);
+    font-weight: var(--display-weight);
+    font-size: var(--text-title);
+  }
+
+  .archive-link:hover .archive-date {
+    text-decoration: underline;
+    text-decoration-thickness: var(--rule-weight);
+  }
+
+  .archive-tldr {
+    color: var(--ink-muted);
+    font-size: var(--text-body-sm);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .archive-count {
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 48rem) {
+    .archive-link {
+      grid-template-columns: 1fr;
+      gap: var(--space-1);
+    }
+  }
+</style>

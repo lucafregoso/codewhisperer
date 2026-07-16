@@ -1,0 +1,37 @@
+{
+  "name": "codewhisperer",
+  "type": "module",
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.32.1",
+  "description": "CodeWhisperer — magazine statico delle rassegne tech giornaliere di Hermes, stile Wired",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "build:test": "PLAYWRIGHT_TEST=1 astro build && pagefind --site dist",
+    "check": "astro check",
+    "preview": "astro preview",
+    "preview:test": "PLAYWRIGHT_TEST=1 astro preview",
+    "astro": "astro",
+    "test:unit": "vitest run",
+    "test": "playwright test --workers=1",
+    "test:ui": "playwright test --ui",
+    "gate": "pnpm run check && pnpm run test:unit && pnpm run build && pnpm test"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.12",
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource-variable/archivo": "^5.2.8",
+    "@fontsource-variable/source-serif-4": "^5.2.8",
+    "astro": "^5.2.0",
+    "axe-core": "^4.12.1",
+    "marked": "^16.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@playwright/test": "^1.61.0",
+    "pagefind": "^1.5.2",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.3",
+    "vitest": "^3.2.0"
+  }
+}

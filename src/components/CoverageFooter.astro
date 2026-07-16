@@ -1,0 +1,89 @@
+---
+import { t } from "../i18n";
+import type { Edition } from "../lib/editions";
+
+interface Props {
+  coverage: NonNullable<Edition["data"]["coverage"]>;
+}
+
+const { coverage } = Astro.props;
+const strings = t();
+---
+
+<footer class="coverage full-bleed" aria-labelledby="coverage-title">
+  <h2 class="kicker coverage-title" id="coverage-title">
+    {strings.edition.coverage}
+  </h2>
+  <dl class="coverage-stats">
+    <div class="stat">
+      <dt>{strings.edition.coverageLabels.sourcesRead}</dt>
+      <dd>{coverage.sourcesRead}/{coverage.sourcesTotal}</dd>
+    </div>
+    <div class="stat">
+      <dt>{strings.edition.coverageLabels.itemsCollected}</dt>
+      <dd>{coverage.itemsCollected}</dd>
+    </div>
+    <div class="stat">
+      <dt>{strings.edition.coverageLabels.itemsPublished}</dt>
+      <dd>{coverage.itemsPublished}</dd>
+    </div>
+    <div class="stat">
+      <dt>{strings.edition.coverageLabels.itemsDiscarded}</dt>
+      <dd>{coverage.itemsDiscarded}</dd>
+    </div>
+  </dl>
+  {
+    coverage.unreachable.length > 0 && (
+      <p class="coverage-unreachable">
+        {strings.edition.coverageLabels.unreachable}:{" "}
+        {coverage.unreachable.join(", ")}.
+      </p>
+    )
+  }
+  {coverage.tagline && <p class="coverage-tagline">{coverage.tagline}</p>}
+</footer>
+
+<style>
+  .coverage {
+    padding-block: var(--space-3);
+    font-family: var(--font-display);
+  }
+
+  .coverage-title {
+    margin: 0 0 var(--space-2);
+  }
+
+  .coverage-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-2);
+  }
+
+  .stat dt {
+    font-size: var(--text-meta);
+    letter-spacing: var(--kicker-tracking);
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .stat dd {
+    margin: 0;
+    font-size: var(--text-title);
+    font-weight: var(--display-weight);
+    font-variation-settings: "wdth" var(--display-width);
+  }
+
+  .coverage-unreachable {
+    font-size: var(--text-body-sm);
+    color: var(--ink-muted);
+  }
+
+  .coverage-tagline {
+    font-size: var(--text-body-sm);
+    font-weight: 700;
+    letter-spacing: var(--kicker-tracking);
+    text-transform: uppercase;
+    margin-bottom: 0;
+  }
+</style>

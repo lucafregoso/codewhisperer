@@ -1,0 +1,74 @@
+---
+import { t } from "../i18n";
+import type { RadarItem } from "../lib/editions";
+import { renderInline } from "../lib/md";
+import SourceBadge from "./SourceBadge.astro";
+
+interface Props {
+  items: RadarItem[];
+}
+
+const { items } = Astro.props;
+const strings = t();
+---
+
+{
+  items.length > 0 && (
+    <section class="radar full-bleed" aria-labelledby="radar-title">
+      <h2 class="kicker radar-title" id="radar-title">
+        {strings.edition.radar}
+      </h2>
+      <ul class="radar-list" role="list">
+        {items.map((item) => (
+          <li class="radar-item">
+            <p class="radar-text" set:html={renderInline(item.text)} />
+            <SourceBadge source={item.source} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .radar {
+    padding-block: var(--space-3);
+  }
+
+  .radar-title {
+    margin: 0 0 var(--space-2);
+  }
+
+  .radar-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 1;
+    column-gap: var(--space-3);
+    column-rule: 1px solid var(--hairline);
+  }
+
+  .radar-item {
+    break-inside: avoid;
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-2);
+  }
+
+  @media (min-width: 48rem) {
+    .radar-list {
+      columns: 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .radar-list {
+      columns: 3;
+    }
+  }
+
+  .radar-text {
+    font-size: var(--text-body-sm);
+    margin-bottom: var(--space-1);
+  }
+</style>

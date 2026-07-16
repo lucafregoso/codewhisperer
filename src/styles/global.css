@@ -1,0 +1,145 @@
+@import "./tokens.css";
+
+/* Reset minimo + fondamenta editoriali */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 17px;
+  overflow-x: clip;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--display-width);
+  font-weight: var(--display-weight);
+  line-height: 1.04;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0 0 var(--space-2);
+  max-width: var(--measure);
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+img,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Utilità di sistema */
+.shell {
+  max-width: var(--shell);
+  margin-inline: auto;
+  padding-inline: var(--space-2);
+}
+
+.kicker {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 100;
+  font-size: var(--text-kicker);
+  font-weight: 700;
+  letter-spacing: var(--kicker-tracking);
+  text-transform: uppercase;
+}
+
+.section-rule {
+  border: 0;
+  border-top: var(--rule-weight) solid var(--rule);
+  margin: 0;
+}
+
+/* Banda editoriale a tutta larghezza: il background sfora la shell
+   (html ha overflow-x: clip), il contenuto resta allineato. */
+.full-bleed {
+  position: relative;
+}
+
+.full-bleed::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline: calc(50% - 50vw);
+  background: var(--surface);
+  border-top: var(--rule-weight) solid var(--rule);
+  z-index: -1;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -999px;
+  top: 0;
+  z-index: 100;
+  background: var(--ink);
+  color: var(--paper);
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--text-body-sm);
+}
+
+.skip-link:focus {
+  left: 0;
+}
+
+/* Il movimento è sempre rinunciabile (costituzione §7) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}

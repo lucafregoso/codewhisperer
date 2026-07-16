@@ -1,0 +1,81 @@
+---
+import MastHead from "../components/MastHead.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { t } from "../i18n";
+import { withBase } from "../lib/url";
+
+const strings = t();
+const pagefindBase = withBase("/pagefind/");
+---
+
+<BaseLayout title={strings.nav.search} canonicalPath="/cerca/">
+  <MastHead />
+  <main id="main">
+    <header class="listing-header shell">
+      <h1 class="listing-title">{strings.nav.search}</h1>
+      <hr class="section-rule" aria-hidden="true" />
+    </header>
+    <div class="shell">
+      <div id="search" class="search-ui"></div>
+      <noscript>
+        <p class="search-fallback">
+          {strings.search.noscript}
+        </p>
+        <ul class="search-paths" role="list">
+          <li><a href={withBase("/edizioni/")}>{strings.nav.editions}</a></li>
+          <li>
+            <a href={withBase("/categoria/")}>{strings.nav.categories}</a>
+          </li>
+          <li><a href={withBase("/fonte/")}>{strings.nav.sources}</a></li>
+        </ul>
+      </noscript>
+    </div>
+  </main>
+</BaseLayout>
+
+<link rel="stylesheet" href={`${pagefindBase}pagefind-ui.css`} />
+<script is:inline define:vars={{ pagefindBase }}>
+  // La Pagefind UI esiste solo post-build (pagefind --site dist):
+  // in dev la pagina mostra solo il fallback. Progressive enhancement.
+  const script = document.createElement("script");
+  script.src = `${pagefindBase}pagefind-ui.js`;
+  script.onload = () => {
+    new PagefindUI({
+      element: "#search",
+      showSubResults: true,
+      showImages: false,
+    });
+  };
+  document.head.appendChild(script);
+</script>
+
+<style>
+  .listing-header {
+    padding-block: var(--space-3) 0;
+  }
+
+  .listing-title {
+    font-size: var(--text-hero);
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  .search-ui {
+    padding-block: var(--space-3);
+  }
+
+  .search-fallback {
+    color: var(--ink-muted);
+    padding-top: var(--space-3);
+  }
+
+  .search-paths {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-3);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+</style>
