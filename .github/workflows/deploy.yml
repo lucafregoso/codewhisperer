@@ -43,6 +43,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Check Astro and TypeScript
         run: pnpm run check
 
@@ -51,6 +54,11 @@ jobs:
 
       - name: Build production site
         run: pnpm run build
+
+      # I drop di contenuto vanno dritti su master (costituzione §10):
+      # anche il deploy esegue l'e2e completo — il sito non regredisce mai.
+      - name: Run end-to-end tests
+        run: pnpm test
 
       - name: Upload GitHub Pages artifact
         if: github.ref == 'refs/heads/master'

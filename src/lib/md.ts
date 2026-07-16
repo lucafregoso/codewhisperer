@@ -3,8 +3,15 @@ import { marked } from "marked";
 const renderer = new marked.Renderer();
 
 // Link induriti: i corpi arrivano da Hermes ma restano contenuto esterno.
-renderer.link = ({ href, text }) =>
-  `<a href="${href}" rel="noopener noreferrer">${text}</a>`;
+// parseInline sui token (non il testo raw) preserva l'escaping di marked;
+// href sanitizzato contro quote-breakout e schemi non-http.
+renderer.link = function ({ href, tokens }) {
+  const label = this.parser.parseInline(tokens);
+  const safeHref = /^https?:\/\//i.test(href)
+    ? href.replaceAll('"', "%22")
+    : "#";
+  return `<a href="${safeHref}" rel="noopener noreferrer">${label}</a>`;
+};
 
 /**
  * Converte markdown inline (bold, corsivi, link) in HTML a build time.
