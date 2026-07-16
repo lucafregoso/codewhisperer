@@ -11,15 +11,23 @@ const strings = t();
   <div class="masthead-bar shell">
     <a class="brand" href={withBase("/")}>{site.name}</a>
     <nav class="masthead-nav" aria-label={strings.nav.home}>
-      <a
-        class="masthead-link kicker"
-        href={withBase("/edizioni/")}
-        aria-current={
-          Astro.url.pathname === withBase("/edizioni/") ? "page" : undefined
-        }
-      >
-        {strings.nav.editions}
-      </a>
+      {
+        [
+          { href: "/edizioni/", label: strings.nav.editions },
+          { href: "/categoria/", label: strings.nav.categories },
+          { href: "/fonte/", label: strings.nav.sources },
+        ].map(({ href, label }) => (
+          <a
+            class="masthead-link kicker"
+            href={withBase(href)}
+            aria-current={
+              Astro.url.pathname === withBase(href) ? "page" : undefined
+            }
+          >
+            {label}
+          </a>
+        ))
+      }
       <slot name="nav" />
       <ThemeToggle />
     </nav>

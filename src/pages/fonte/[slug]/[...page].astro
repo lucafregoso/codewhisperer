@@ -1,0 +1,70 @@
+---
+import type { GetStaticPaths, Page } from "astro";
+import CorpusItemCard from "../../../components/CorpusItemCard.astro";
+import MastHead from "../../../components/MastHead.astro";
+import Pagination from "../../../components/Pagination.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { t } from "../../../i18n";
+import {
+  fromSource,
+  getCorpus,
+  getEmergentSources,
+  type CorpusItem,
+} from "../../../lib/editions";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const corpus = await getCorpus();
+  const sources = await getEmergentSources();
+  return sources.flatMap((source) =>
+    paginate(fromSource(corpus, source.slug), {
+      params: { slug: source.slug },
+      props: { label: source.label },
+      pageSize: 30,
+    }),
+  );
+}) satisfies GetStaticPaths;
+
+interface Props {
+  page: Page<CorpusItem>;
+  label: string;
+}
+
+const { page, label } = Astro.props;
+const { slug } = Astro.params;
+const strings = t();
+---
+
+<BaseLayout
+  title={`${strings.filters.source}: ${label}`}
+  canonicalPath={`/fonte/${slug}/${page.currentPage > 1 ? `${page.currentPage}/` : ""}`}
+>
+  <MastHead />
+  <main id="main">
+    <header class="listing-header shell">
+      <p class="kicker">{strings.filters.source}</p>
+      <h1 class="listing-title">{label}</h1>
+      <p class="kicker listing-count">{strings.filters.items(page.total)}</p>
+      <hr class="section-rule" aria-hidden="true" />
+    </header>
+    <div class="shell">
+      {page.data.map((item) => <CorpusItemCard item={item} />)}
+      <Pagination page={page} />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .listing-header {
+    padding-block: var(--space-3) 0;
+  }
+
+  .listing-title {
+    font-size: var(--text-hero);
+    text-transform: uppercase;
+  }
+
+  .listing-count {
+    color: var(--ink-faint);
+    margin-block: var(--space-1) var(--space-2);
+  }
+</style>

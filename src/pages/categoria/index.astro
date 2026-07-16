@@ -1,0 +1,39 @@
+---
+import MastHead from "../../components/MastHead.astro";
+import TermIndex from "../../components/TermIndex.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { t } from "../../i18n";
+import { getEmergentCategories } from "../../lib/editions";
+
+const strings = t();
+const categories = await getEmergentCategories();
+---
+
+<BaseLayout title={strings.filters.categories} canonicalPath="/categoria/">
+  <MastHead />
+  <main id="main">
+    <header class="listing-header shell">
+      <h1 class="listing-title">{strings.filters.categories}</h1>
+      <hr class="section-rule" aria-hidden="true" />
+    </header>
+    <div class="shell">
+      <TermIndex
+        terms={categories}
+        base="categoria"
+        emptyNote={strings.filters.noCategories}
+      />
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .listing-header {
+    padding-block: var(--space-3) 0;
+  }
+
+  .listing-title {
+    font-size: var(--text-hero);
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+</style>

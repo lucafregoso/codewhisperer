@@ -1,0 +1,62 @@
+---
+import { t } from "../i18n";
+import type { Page } from "astro";
+import type { CorpusItem } from "../lib/editions";
+
+interface Props {
+  page: Page<CorpusItem>;
+}
+
+const { page } = Astro.props;
+const strings = t();
+const totalPages = Math.ceil(page.total / page.size);
+---
+
+{
+  totalPages > 1 && (
+    <nav
+      class="pagination"
+      aria-label={strings.filters.pageOf(page.currentPage, totalPages)}
+    >
+      {page.url.prev ? (
+        <a class="page-link kicker" href={page.url.prev} rel="prev">
+          ← {strings.filters.previousPage}
+        </a>
+      ) : (
+        <span />
+      )}
+      <span class="kicker page-status">
+        {strings.filters.pageOf(page.currentPage, totalPages)}
+      </span>
+      {page.url.next && (
+        <a class="page-link kicker" href={page.url.next} rel="next">
+          {strings.filters.nextPage} →
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-2);
+    border-top: var(--rule-weight) solid var(--rule);
+    padding-block: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .page-link {
+    text-decoration: none;
+  }
+
+  .page-link:hover {
+    text-decoration: underline;
+  }
+
+  .page-status {
+    color: var(--ink-faint);
+  }
+</style>
