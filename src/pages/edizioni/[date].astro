@@ -1,0 +1,33 @@
+---
+import EditionLayout from "../../components/EditionLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { t } from "../../i18n";
+import { formatFullDate } from "../../lib/dates";
+import { getEditionsSorted, type Edition } from "../../lib/editions";
+import { editionStructuredData } from "../../lib/structured-data";
+
+export async function getStaticPaths() {
+  const editions = await getEditionsSorted();
+  return editions.map((edition) => ({
+    params: { date: edition.id },
+    props: { edition },
+  }));
+}
+
+interface Props {
+  edition: Edition;
+}
+
+const { edition } = Astro.props;
+const strings = t();
+const title = strings.edition.editionOf(formatFullDate(edition.data.date));
+---
+
+<BaseLayout
+  title={title}
+  description={edition.data.tldr}
+  canonicalPath={`/edizioni/${edition.id}/`}
+  structuredData={editionStructuredData(edition, Astro.site)}
+>
+  <EditionLayout edition={edition} />
+</BaseLayout>

@@ -1,0 +1,29 @@
+---
+import { accentVar } from "../lib/accent";
+
+interface Props {
+  categories: string[];
+  fallback?: string;
+}
+
+const { categories, fallback } = Astro.props;
+const primary = categories[0];
+const label = primary ? primary.replaceAll("-", " ") : fallback;
+---
+
+{
+  label && (
+    <p
+      class="kicker category-kicker"
+      style={primary ? `color: var(${accentVar(primary)})` : undefined}
+    >
+      {label}
+    </p>
+  )
+}
+
+<style>
+  .category-kicker {
+    margin: 0 0 var(--space-1);
+  }
+</style>

@@ -1,0 +1,91 @@
+---
+import { t } from "../i18n";
+import type { Story } from "../lib/editions";
+import { renderInline } from "../lib/md";
+import CategoryKicker from "./CategoryKicker.astro";
+import SourceBadge from "./SourceBadge.astro";
+
+interface Props {
+  story: Story;
+  variant: "hero" | "lead" | "grid";
+}
+
+const { story, variant } = Astro.props;
+const strings = t();
+const bodyHtml = renderInline(story.body);
+const HeadingTag = variant === "hero" ? "h2" : "h3";
+---
+
+<article class:list={["story", `story--${variant}`]}>
+  <CategoryKicker categories={story.categories} />
+  <HeadingTag class="story-title" id={story.slug}>
+    <a class="story-anchor" href={`#${story.slug}`}>{story.title}</a>
+  </HeadingTag>
+  <p class="story-body" set:html={bodyHtml} />
+  <footer class="story-sources">
+    <span class="sr-only">{strings.edition.sources}:</span>
+    <ul class="source-list" role="list">
+      {story.sources.map((source) => (
+        <li>
+          <SourceBadge source={source} />
+        </li>
+      ))}
+    </ul>
+  </footer>
+</article>
+
+<style>
+  .story {
+    min-inline-size: 0;
+  }
+
+  .story-title {
+    scroll-margin-top: var(--space-4);
+    margin-block: 0 var(--space-1);
+  }
+
+  .story--hero .story-title {
+    font-size: var(--text-hero);
+    letter-spacing: -0.01em;
+  }
+
+  .story--lead .story-title {
+    font-size: var(--text-headline);
+  }
+
+  .story--grid .story-title {
+    font-size: var(--text-title);
+  }
+
+  .story-anchor {
+    text-decoration: none;
+  }
+
+  .story-anchor:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+  }
+
+  .story-body {
+    margin-block: var(--space-1) var(--space-1);
+  }
+
+  .story--hero .story-body {
+    font-size: var(--text-deck);
+  }
+
+  .story--grid .story-body,
+  .story--lead .story-body {
+    font-size: var(--text-body-sm);
+    color: var(--ink-muted);
+  }
+
+  .source-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+  }
+</style>
