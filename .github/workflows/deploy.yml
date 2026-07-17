@@ -52,13 +52,25 @@ jobs:
       - name: Run unit tests (parser)
         run: pnpm run test:unit
 
+      # I drop di contenuto vanno dritti su master (costituzione §10):
+      # anche il deploy esegue l'e2e completo — il sito non regredisce mai.
+      # ATTENZIONE all'ordine: l'e2e ricostruisce dist/ con la build di test
+      # (base "/", site 127.0.0.1:4399). La build di produzione DEVE venire
+      # dopo, o su Pages finisce l'artifact sbagliato (successo il 17 luglio
+      # 2026: CSS 404 e canonical su localhost in produzione).
+      - name: Run end-to-end tests
+        run: pnpm test
+
       - name: Build production site
         run: pnpm run build
 
-      # I drop di contenuto vanno dritti su master (costituzione §10):
-      # anche il deploy esegue l'e2e completo — il sito non regredisce mai.
-      - name: Run end-to-end tests
-        run: pnpm test
+      - name: Verify dist is the production build
+        run: |
+          grep -q "href=\"${BASE_PATH%/}/_astro" dist/index.html
+          if grep -rq "127.0.0.1:4399" dist/index.html; then
+            echo "dist/ contiene URL della build di test" >&2
+            exit 1
+          fi
 
       - name: Upload GitHub Pages artifact
         if: github.ref == 'refs/heads/master'
