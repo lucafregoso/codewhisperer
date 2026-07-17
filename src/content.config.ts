@@ -34,6 +34,8 @@ const editions = defineCollection({
       masthead: z.string().min(1),
       tldr: z.string().min(1),
       file: z.string().min(1),
+      // Audio dell'edizione: input/podcast/<basename>.mp3, opzionale.
+      podcast: z.object({ file: z.string().min(1) }).optional(),
       stories: z.array(story).min(1),
       radar: z.array(radarItem).default([]),
       slowFeed: z

@@ -9,20 +9,24 @@ const FIXTURES = join(process.cwd(), "tests", "fixtures");
 
 const read = (dir: string, file: string) => readFileSync(join(dir, file), "utf8");
 
-// Il corpus cresce di un'edizione al giorno: questi test verificano il
-// contratto di docs/INGESTION.md, mai lo stato del corpus (conteggi fissi,
-// range di date, sezioni opzionali). Un test che congela il corpus blocca
-// il deploy della prima edizione nuova — è già successo il 17 luglio 2026.
+// Il corpus in input/ è dinamico: lo popolano gli scraper di Hermes, i
+// file possono essere rinominati e le edizioni future non sono
+// prevedibili. Questi test verificano SOLO il contratto di
+// docs/INGESTION.md — mai contenuti, conteggi, date o filename
+// specifici (un test che congela il corpus blocca il deploy della
+// prima edizione nuova: successo il 17 luglio 2026). I check puntuali
+// sul formato vivono sulle fixture in tests/fixtures/, che sono nostre.
 describe("parseEdition — corpus reale in input/", () => {
   const files = readdirSync(INPUT).filter((f) => f.endsWith(".md"));
+  const editions = files.map((f) => parseEdition(read(INPUT, f)));
 
-  it("il corpus contiene almeno le 5 rassegne di luglio", () => {
-    expect(files.length).toBeGreaterThanOrEqual(5);
+  it("il corpus contiene almeno un'edizione (serve per la homepage)", () => {
+    expect(files.length).toBeGreaterThanOrEqual(1);
   });
 
   it.each(files)("parsa %s senza errori", (file) => {
     const edition = parseEdition(read(INPUT, file));
-    expect(edition.masthead).toBe("RubricAI");
+    expect(edition.masthead.length).toBeGreaterThan(0);
     expect(edition.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(Number.isNaN(Date.parse(edition.date))).toBe(false);
     expect(edition.tldr.length).toBeGreaterThan(0);
@@ -36,41 +40,41 @@ describe("parseEdition — corpus reale in input/", () => {
   });
 
   it("le date del corpus sono uniche (una edizione per giorno)", () => {
-    const dates = files.map((f) => parseEdition(read(INPUT, f)).date);
+    const dates = editions.map((e) => e.date);
     expect(new Set(dates).size).toBe(files.length);
-  });
-
-  it("l'edizione del 14 (filename variante) ha la data dall'H1", () => {
-    const edition = parseEdition(read(INPUT, "Rassegna 14 Lug 2026.md"));
-    expect(edition.date).toBe("2026-07-14");
-  });
-
-  it("il via-pattern è risolto nel corpus (Reuters via Techmeme)", () => {
-    const edition = parseEdition(read(INPUT, "Rassegnai Daily Jul 16 2026.md"));
-    const allRefs = edition.stories.flatMap((s) => s.sources);
-    const viaTechmeme = allRefs.filter((r) => r.via?.slug === "techmeme");
-    expect(viaTechmeme.length).toBeGreaterThan(0);
-    expect(viaTechmeme.some((r) => r.slug === "reuters")).toBe(true);
-  });
-
-  it("la nota di copertura del 16 luglio è completa", () => {
-    const edition = parseEdition(read(INPUT, "Rassegnai Daily Jul 16 2026.md"));
-    expect(edition.coverage).toMatchObject({
-      sourcesRead: 60,
-      sourcesTotal: 65,
-      itemsCollected: 299,
-      itemsPublished: 21,
-      itemsDiscarded: 278,
-    });
-    expect(edition.coverage?.unreachable.length).toBeGreaterThanOrEqual(4);
-    expect(edition.coverage?.tagline).toContain("puoi ignorarlo");
   });
 });
 
-describe("parseEdition — edge cases sintetici", () => {
+describe("parseEdition — contratto sulle fixture", () => {
+  it("masthead e data vengono dall'H1, non dal filename", () => {
+    const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
+    expect(edition.masthead).toBe("RubricAI");
+    expect(edition.date).toBe("2026-07-01");
+  });
+
+  it("il via-pattern è risolto (Techmeme (Reuters) → reuters via techmeme)", () => {
+    const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
+    const viaRef = edition.stories[0]?.sources.find((s) => s.via);
+    expect(viaRef).toBeDefined();
+    expect(viaRef?.slug).toBe("reuters");
+    expect(viaRef?.via?.slug).toBe("techmeme");
+  });
+
+  it("la nota di copertura è completa", () => {
+    const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
+    expect(edition.coverage).toMatchObject({
+      sourcesRead: 10,
+      sourcesTotal: 12,
+      itemsCollected: 50,
+      itemsPublished: 4,
+      itemsDiscarded: 46,
+    });
+    expect(edition.coverage?.unreachable).toHaveLength(2);
+    expect(edition.coverage?.tagline).toContain("puoi ignorarlo");
+  });
+
   it("legge le categorie esplicite e il suffisso radar [cat:]", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
-    expect(edition.date).toBe("2026-07-01");
     expect(edition.stories[0]?.categories).toEqual([
       "intelligenza-artificiale",
       "open-source",
