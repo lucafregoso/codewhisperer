@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { corpusDates } from "./helpers/corpus";
 
 test.describe("permalink edizione", () => {
   test("/edizioni/2026-07-14/ mostra l'edizione del 14 (filename variante)", async ({
@@ -29,7 +30,8 @@ test.describe("permalink edizione", () => {
     const homeHero = await page
       .locator(".story--hero .story-title")
       .textContent();
-    await page.goto("/edizioni/2026-07-16/");
+    const latestDate = corpusDates().at(-1)!;
+    await page.goto(`/edizioni/${latestDate}/`);
     const permalinkHero = await page
       .locator(".story--hero .story-title")
       .textContent();

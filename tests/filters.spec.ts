@@ -46,15 +46,18 @@ test.describe("filtri per fonte", () => {
 });
 
 test.describe("filtri per categoria", () => {
-  test("/categoria/ mostra lo stato vuoto finché Hermes non categorizza", async ({
+  test("/categoria/ mostra lo stato vuoto o le categorie emergenti", async ({
     page,
   }) => {
+    // Finché Hermes non emette righe **Categorie:** la pagina mostra lo
+    // stato vuoto; alla prima edizione categorizzata compaiono le righe.
+    // Entrambi gli stati sono validi: il test non deve congelare il corpus.
     await page.goto("/categoria/");
     await expect(
       page.getByRole("heading", { name: "Categorie" }),
     ).toBeVisible();
-    await expect(page.locator(".term-empty")).toContainText(
-      "prossime edizioni",
-    );
+    const emptyState = page.locator(".term-empty");
+    const termRows = page.locator(".term-row");
+    expect((await emptyState.count()) + (await termRows.count())).toBeGreaterThan(0);
   });
 });

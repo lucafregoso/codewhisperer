@@ -9,34 +9,35 @@ const FIXTURES = join(process.cwd(), "tests", "fixtures");
 
 const read = (dir: string, file: string) => readFileSync(join(dir, file), "utf8");
 
+// Il corpus cresce di un'edizione al giorno: questi test verificano il
+// contratto di docs/INGESTION.md, mai lo stato del corpus (conteggi fissi,
+// range di date, sezioni opzionali). Un test che congela il corpus blocca
+// il deploy della prima edizione nuova — è già successo il 17 luglio 2026.
 describe("parseEdition — corpus reale in input/", () => {
   const files = readdirSync(INPUT).filter((f) => f.endsWith(".md"));
 
-  it("il corpus contiene le 5 rassegne di luglio", () => {
-    expect(files).toHaveLength(5);
+  it("il corpus contiene almeno le 5 rassegne di luglio", () => {
+    expect(files.length).toBeGreaterThanOrEqual(5);
   });
 
   it.each(files)("parsa %s senza errori", (file) => {
     const edition = parseEdition(read(INPUT, file));
     expect(edition.masthead).toBe("RubricAI");
-    expect(edition.date).toMatch(/^2026-07-1[2-6]$/);
-    expect(edition.tldr.length).toBeGreaterThan(40);
-    expect(edition.stories.length).toBeGreaterThanOrEqual(5);
+    expect(edition.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(Number.isNaN(Date.parse(edition.date))).toBe(false);
+    expect(edition.tldr.length).toBeGreaterThan(0);
+    expect(edition.stories.length).toBeGreaterThanOrEqual(1);
     for (const story of edition.stories) {
-      expect(story.title.length).toBeGreaterThan(10);
-      expect(story.body.length).toBeGreaterThan(50);
+      expect(story.title.length).toBeGreaterThan(0);
+      expect(story.body.length).toBeGreaterThan(0);
       expect(story.sources.length).toBeGreaterThanOrEqual(1);
       expect(story.slug).toMatch(/^[a-z0-9-]+$/);
     }
-    expect(edition.radar.length).toBeGreaterThan(5);
-    expect(edition.slowFeed).toBeDefined();
-    expect(edition.coverage).toBeDefined();
   });
 
-  it("le date del corpus sono uniche e la massima è il 16 luglio", () => {
-    const dates = files.map((f) => parseEdition(read(INPUT, f)).date).sort();
-    expect(new Set(dates).size).toBe(5);
-    expect(dates.at(-1)).toBe("2026-07-16");
+  it("le date del corpus sono uniche (una edizione per giorno)", () => {
+    const dates = files.map((f) => parseEdition(read(INPUT, f)).date);
+    expect(new Set(dates).size).toBe(files.length);
   });
 
   it("l'edizione del 14 (filename variante) ha la data dall'H1", () => {

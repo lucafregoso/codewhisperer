@@ -1,23 +1,30 @@
 import { test, expect } from "@playwright/test";
+import { formatFullDate } from "../src/lib/dates";
+import { corpusEditions } from "./helpers/corpus";
+
+const latest = corpusEditions().at(-1)!;
+
+// Edizione immutabile con tutte le sezioni opzionali (radar, feed lento,
+// copertura, via-pattern): i check strutturali vivono qui, non sulla
+// homepage, che cambia contenuto a ogni nuova edizione.
+const FROZEN = "/edizioni/2026-07-16/";
 
 test.describe("homepage — ultima edizione", () => {
-  test("mostra l'edizione con data massima (16 luglio 2026)", async ({
-    page,
-  }) => {
+  test("mostra l'edizione con data massima del corpus", async ({ page }) => {
     await page.goto("/");
     await expect(page).toHaveTitle(/CodeWhisperer/);
     await expect(page.locator(".edition-date")).toContainText(
-      "16 luglio 2026",
+      formatFullDate(new Date(latest.date)),
     );
     await expect(
-      page.getByRole("heading", {
-        name: /Hyundai rende Boston Dynamics/,
-      }),
+      page.getByRole("heading", { name: latest.stories[0]!.title }),
     ).toBeVisible();
   });
 
-  test("le sezioni dell'edizione sono tutte presenti", async ({ page }) => {
-    await page.goto("/");
+  test("le sezioni dell'edizione sono tutte presenti (edizione di riferimento)", async ({
+    page,
+  }) => {
+    await page.goto(FROZEN);
     await expect(page.getByRole("heading", { name: "Radar" })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: /feed lento/i }),
@@ -28,8 +35,10 @@ test.describe("homepage — ultima edizione", () => {
     await expect(page.locator(".coverage")).toContainText("puoi ignorarlo");
   });
 
-  test("il badge fonte risolve il pattern via", async ({ page }) => {
-    await page.goto("/");
+  test("il badge fonte risolve il pattern via (edizione di riferimento)", async ({
+    page,
+  }) => {
+    await page.goto(FROZEN);
     const viaBadge = page.locator(".source-badge", {
       hasText: "via Techmeme",
     });
@@ -42,6 +51,7 @@ test.describe("homepage — ultima edizione", () => {
     await page.goto("/");
     await expect(page.locator(".edition-date")).toBeVisible();
     await expect(page.locator(".story").first()).toBeVisible();
+    await page.goto(FROZEN);
     await expect(page.locator(".radar")).toBeVisible();
     await expect(page.locator(".coverage")).toBeVisible();
     await context.close();
