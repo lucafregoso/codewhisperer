@@ -1,0 +1,62 @@
+# RubricAI — Edizione del 13 luglio 2026
+
+> Anthropic spinge per relegare i modelli open weight a "cittadini di seconda classe", Z.ai contrattacca, OpenAI allenta i limiti di GPT-5.6 sotto il carico, e qualcuno starts a scansionare i server MCP con handshake reali.
+
+## 🗞 In primo piano
+
+### 1. Modelli open weight al "test esistenziale": Anthropic guida la campagna contro i modelli cinesi, Z.ai risponde
+Nathan Lambert su Interconnects avverte che i modelli AI open weight stanno affrontando un "test esistenziale" di policy negli Stati Uniti, con Anthropic che guida una campagna contro i modelli cinesi accusati di distillation. Lambert, rifacendosi al suo precedente "6 months to live for open models", descrive un'azione politica che "could make open models a permanent second class citizen". La risposta arriva da Pechino: Bloomberg riferisce di un memo di Tang Jie, fondatore di Z.ai (il laboratorio cinese dietro i modelli GLM), che argomenta che le capacità AI di frontiera dovrebbero restare "as open and widely accessible as possible". Due posizioni speculari — chiusura vs aperture — che definiscono il campo di battaglia della policy AI nei prossimi mesi.
+**Fonti:** [Interconnects (Techmeme)](https://www.techmeme.com/260713/p1#a260713p1) — Lambert: "existential policy test" e campagna Anthropic sulla distillation; [Bloomberg (Techmeme)](https://www.techmeme.com/260712/p10#a260712p10) — memo di Tang Jie/Z.ai per il frontier AI open e accessible.
+
+### 2. OpenAI allenta temporaneamente i limiti di GPT-5.6 Sol dopo 48 ore di picco di domanda
+Dopo 48 ore di utilizzo intensivo di Codex e ChatGPT Work, OpenAI ha rimosso temporaneamente la restrizione d'uso di cinque ore per i piani Plus, Pro e Business, e ha emesso un reset unico del consumo per tutti gli utenti. Il product lead Tibo ha confermato il rollout di modifiche per rendere GPT-5.6 Sol più efficiente su tutti i fronti, riducendo il consumo di quota con ogni richiesta — probabilmente via minor consumo di token. La mossa segna la prima vera "crisi di capacità" del modello ammiraglia di OpenAI, e arriva mentre la concorrenza (Anthropic, Meta) scala una guerra di prezzo sull'efficienza.
+**Fonti:** [BleepingComputer](https://www.bleepingcomputer.com/news/artificial-intelligence/openai-temporarily-relaxes-gpt-56-sol-usage-limits/) — dettagli della rimozione del limite e del reset; pronunciamento di Tibo su X.
+
+### 3. Cursor costruisce "Sand", un agente AI general-purpose per non-sviluppatori
+The Information rivela che Cursor sta sviluppando un agente AI general-purpose in codename "Sand", mirato a non-sviluppatori: gestisce email, messaggi e documenti, ed è progettato per competere direttamente con Claude Cowork di Anthropic. La mossa segna un'estensione strategica di Cursor oltre il coding — l'azienda non vuole più essere solo l'IDE AI, ma un concorrente nel mercato degli agenti general-purpose per il consumatore e il knowledge worker.
+**Fonti:** [The Information (Techmeme)](https://www.techmeme.com/260712/p9#a260712p9) — Grace Kay: Sand come agente general-purpose per non-dev contro Claude Cowork.
+
+### 4. SANS ISC: scansione diffusa e coordinata dei server MCP con handshake di protocollo reale
+Un analista del SANS Internet Storm Center, esaminando 14 giorni di log di un web host minore, ha scoperto una categoria di recon AI prima non documentata: qualcuno sta scansionando sistematicamente server MCP, file di configurazione di AI assistant ed endpoint LLM esposti. La parte inquietante: i probe POST /mcp non sono richieste cieche, ma portano handshake JSON-RPC 2.0 correttamente formatati con la versione di protocollo MCP "2025-03-26" — gli scanner "parlano il protocollo" e aspettano una risposta conforme. Gli handshake provengono da 49 IP distinti, "più distribuiti di qualsiasi altra categoria nel dataset". Non è un ricercatore: è una scansione ampia e coordinata.
+**Fonti:** [SANS ISC](https://isc.sans.edu/diary/rss/33150) — diary entry con i dettagli tecnici degli MCP handshake e l'analisi dei log.
+
+### 5. TSMC aggiunge due impianti di packaging avanzato, output annuale previsto $9.35B+
+Reuters riferisce che TSMC aggiungerà due ulteriori impianti di packaging avanzato di chip nel Chiayi Science Park, portando il totale a quattro strutture che si prevede genereranno oltre 9.35 miliardi di dollari di output annuale. L'espansione risponde alla domanda esplosiva di packaging avanzato guidata dai chip AI — il collo di bottiglia si è spostato dalla produzione di wafer alla capacità di packaging CoWoS e simili.
+**Fonti:** [Reuters (Techmeme)](https://www.techmeme.com/260713/p2#a260713p2) — ministro taiwanese annuncia i due nuovi impianti e la previsione di output.
+
+### 6. Lenovo nega di usare SSD cinesi bancati dove non consentito, ma Apple chiede di rivedere il ban
+The Register riporta che Lenovo ha smentito l'uso di SSD cinesi YMTC in mercati dove sono vietati: il ThinkBook 14 G9 IPL in cui Notebookcheck aveva trovato un disco YMTC era destinato al mercato tedesco, non a quello statunitense. Oltre l'episodio, l'articolo rivela che Apple starebbe chiedendo all'amministrazione Trump di rivedere il ban su YMTC per garantire la supply chain necessaria a continuare a produrre i suoi dispositivi — un segnale di quanto la carenza di componenti per la memoria, aggravata dal boom AI, stia erodendo anche le posizioni geopolitiche hardline.
+**Fonti:** [The Register](https://www.theregister.com/personal-tech/2026/07/13/lenovo-denies-using-banned-chinese-ssds-where-theyre-not-allowed/5270212) — smentita Lenovo, contesto YMTC, Apple chiede revisione del ban; breve anche su recupero razzi cinesi e regulation AI australiana.
+
+### 7. "Automation Without Understanding": l'AI produce matematica di ricerca, ma la pipeline umana di comprensione si indebolisce
+Un saggio su arXiv argomenta che due fenomeni simultanei costituiscono uno "strategic error": l'AI sta iniziando a produrre matematica autenticamente di livello ricerca (citando il disproof di maggio 2026 di una congettura di Erdős sul planar unit distance problem), e contemporaneamente gli Stati Uniti stanno indebolendo la pipeline che forma gli umani capaci di capire cosa stanno facendo questi sistemi. La capacità matematica — intesa come abilità allenata di verificare, interpretare e sfidare il ragionamento matematico — è "una forma di infrastruttura, costruita in generazioni da istituzioni che non possono essere ricostituite a richiesta". Il saggio propone di trattare la capacità matematica come asset strategico paragonabile al capability dei semiconduttori, e che i sistemi AI che compiono ragionamenti consequenziali debbano esporre le loro affermazioni critiche in forma checkable da una macchina.
+**Fonti:** [arXiv (Hacker News)](https://arxiv.org/abs/2607.06377) — saggio completo: tesi principale, riferimento al disproof di Erdős, proposta di reasoning auditable.
+
+### 8. Hacker News dibatte un flag per gli articoli generati AI: "writes e write-nots"
+Un utente ha chiesto a Hacker News di introdurre un flag per segnalare gli articoli generati da AI, non per declassarli ma come indicatore. La risposta del moderatore dang è diventata il centro della discussione: descrive una "corsa agli armamenti affascinante" in cui "le AI si addestrano sugli umani ma l'hivemind umano si addestra sulle AI". I lettori stanno sviluppando "sensibilità allergiche" al linguaggio che suona come prodotto da un LLM, e non appena scatta l'allergia la scrittura "finisce istantaneamente in un bucket a basso status". Dang cita Paul Graham ("writes and write-nots") e nota il lato positivo: chi vuole essere letto come high-status può semplicemente "applicare la mossa di judo di scriverlo personalmente".
+**Fonti:** [Hacker News](https://news.ycombinator.com/item?id=48886741) — thread completo con la risposta di dang sulla distinzione writes/write-nots.
+
+## 📡 Radar
+- NeuroVFM: foundation model per neuroimaging addestrato con Vol-JEPA su 5.24M di volumi MRI/CT non curati, pubblicato su Nature Medicine — [MarkTechPost](https://www.marktechpost.com/2026/07/12/meet-neurovfm-a-new-neuroimaging-foundation-model-trained-with-vol-jepa-on-uncurated-clinical-mri-and-ct-volumes/)
+- Migrare un agente AI di produzione a GPT-5.6: 2.2x più veloce, 27% meno costoso rispetto a Claude Opus 4.8 — [Hacker News](https://ploy.ai/blog/migrating-a-production-ai-agent-to-gpt-5-6)
+- FT: i musei usano chatbot AI per raggiungere nuovo pubblico, ma il staff teme inaccuratezze e bias — [Techmeme](https://www.techmeme.com/260712/p12#a260712p12)
+- FT: profilo di Asha Sharma, outsider elevata da Nadella a guidare Xbox con tagli drastici e chiusura studi — [Techmeme](https://www.techmeme.com/260712/p11#a260712p11)
+- Data Engineering Weekly #278: BAIR "Intelligence is Free, Now What?" sui data system per agent, e Microsoft Flint come visualization language — [Data Engineering Weekly](https://www.dataengineeringweekly.com/p/data-engineering-weekly-278)
+- SRE Weekly #525: post-incident review come "tre meeting in un trench coat" + Honeycomb incident report + core dump epidemiology — [SRE Weekly](https://sreweekly.com/sre-weekly-issue-525/)
+- LessWrong: "il governo USA potrebbe non riuscire a prendere il controllo durante il takeoff" — l'RSI loop rende la seizure impraticabile — [LessWrong](https://www.lesswrong.com/posts/DgTy3DC8rEw7a72rx/the-us-government-may-find-it-difficult-to-seize-control)
+- LessWrong: "5 scenari Plan A" per la governance AI — alternative a centralizzazione compute e coop US-Cina — [LessWrong](https://www.lesswrong.com/posts/7HHKaD3BdsfHX7doz/5-plan-a-scenarios)
+- "Quadrupling code performance with a useless if": come un'istruzione apparentemente inutile sblocca il parallelismo a livello di istruzione — [Lobste.rs](https://purplesyringa.moe/blog/quadrupling-code-performance-with-a-useless-if/)
+- Simon Willison: un agente AI non dovrebbe mai essere il "Directly Responsible Individual" di un progetto — [Simon Willison](https://simonwillison.net/2026/Jul/12/directly-responsible-individuals/#atom-everything)
+- Overhauled homelab: da Zimaboard a rete cablata in tutta la casa, la kaizen di timharek — [Lobste.rs](https://timharek.no/blog/kaizen-4/)
+- "How I Learned to Read Again": il viaggio dai libri agli schermi e ritorno, di Sam Kahn — [Hacker News](https://substack.magazinenongrata.com/p/how-i-learned-to-read-again)
+- Why Vanilla JavaScript: un manifesto contro la complessità del framework ecosystem — [Hacker News](https://guseyn.com/html/posts/why-vanilla-js.html)
+- Efficient deterministic simulation in the Cloud: talk sulla simulazione deterministica per game development — [Lobste.rs](https://youtu.be/DF3nGDi2-dc)
+- "Know thine enemy": impegno critico con lo sviluppo software assistito da AI — [Lobste.rs](https://medium.com/bits-and-behavior/know-thine-enemy-a-critical-engagement-with-ai-assisted-software-development-e41d9b058ab1)
+
+## 🐌 Dal feed lento
+**"Browsers Do Math Differently on Every OS; Anti-Bot Systems Read the Bits"** di Scrapfly. Analisi tecnica impeccabile di come un singolo commit in V8 (c1486295ae5) abbia sostituito l'implementazione bundled di fdlibm con `std::tanh`, delegando i calcoli trascendentali alla libm del sistema operativo. Risultato: `Math.tanh(0.8)` restituisce bit diversi su Linux (glibc), macOS (libsystem_m) e Windows (UCRT), trasformando una banale chiamata in un'impronta digitale del sistema operativo — e gli anti-bot system già leggono quei bit. Fino a Chrome 147, V8 computava tanh internamente e non leakava nulla; da Chrome 148 in poi, la matematica tradisce il tuo OS. Pezzo che merita tempo per chiunque lavori su fingerprinting, anti-bot o compatibilità cross-platform. — [Lobste.rs](https://scrapfly.dev/posts/browser-math-os-fingerprint/)
+
+## ✅ Nota di copertura
+Fonti lette: 136/150. Irraggiungibili: Adventures in Nodeland (Matteo Collina), CSIRT Italia (ACN), Red Hot Cyber, Level Up (Patrick Kua), Blef (Christophe Blefari), Robin Wieruch, Chain of Thought (Every), Shopify Engineering, Uber Engineering, tl;dr sec (Clint Gibler), Google Threat Analysis Group, Schneier on Security, CISA Advisories, HashiCorp Blog.
+Item raccolti: 144; storie pubblicate: 24; scartati di proposito: 120.
+Se non è qui, puoi ignorarlo.
