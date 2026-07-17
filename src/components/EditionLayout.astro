@@ -3,9 +3,11 @@ import { t } from "../i18n";
 import type { Edition } from "../lib/editions";
 import { formatFullDate } from "../lib/dates";
 import { renderInline } from "../lib/md";
+import { withBase } from "../lib/url";
 import CoverageFooter from "./CoverageFooter.astro";
 import EditionNav from "./EditionNav.astro";
 import MastHead from "./MastHead.astro";
+import PodcastPlayer from "./PodcastPlayer.astro";
 import RadarRail from "./RadarRail.astro";
 import SlowFeedFeature from "./SlowFeedFeature.astro";
 import StoryCard from "./StoryCard.astro";
@@ -18,7 +20,7 @@ interface Props {
 
 const { edition, prev, next } = Astro.props;
 const strings = t();
-const { stories, radar, slowFeed, coverage } = edition.data;
+const { stories, radar, slowFeed, coverage, podcast } = edition.data;
 
 const sorted = [...stories].sort((a, b) => a.position - b.position);
 const hero = sorted[0];
@@ -36,6 +38,13 @@ const grid = sorted.slice(3);
       {strings.edition.editionOf(formatFullDate(edition.data.date))}
     </h1>
     <p class="edition-tldr" set:html={renderInline(edition.data.tldr)} />
+    {
+      podcast && (
+        <PodcastPlayer
+          src={withBase(`/podcast/${encodeURIComponent(podcast.file)}`)}
+        />
+      )
+    }
   </header>
 
   <div class="shell">

@@ -1,10 +1,12 @@
 import { test, expect } from "@playwright/test";
+import { formatMonthYear } from "../src/lib/dates";
 import { corpusDates } from "./helpers/corpus";
 
-// Il corpus cresce di un'edizione al giorno: conteggi e sequenze di date
-// arrivano da input/, mai da valori fissi.
+// Il corpus è dinamico (lo popolano gli scraper): conteggi, date e mesi
+// arrivano da input/ al momento del run, mai da valori fissi.
 const dates = corpusDates(); // ascendenti
 const newestFirst = [...dates].reverse();
+const latestMonth = formatMonthYear(new Date(newestFirst[0]!));
 
 test.describe("archivio e navigazione per data", () => {
   test("/edizioni/ elenca tutte le edizioni del corpus raggruppate per mese", async ({
@@ -13,7 +15,7 @@ test.describe("archivio e navigazione per data", () => {
     await page.goto("/edizioni/");
     await expect(page.getByRole("heading", { name: "Edizioni" })).toBeVisible();
     await expect(
-      page.locator(".archive-month-title", { hasText: "luglio 2026" }),
+      page.locator(".archive-month-title", { hasText: latestMonth }),
     ).toBeVisible();
     await expect(page.locator(".archive-row")).toHaveCount(dates.length);
   });

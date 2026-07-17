@@ -49,6 +49,9 @@ const it = {
     via: "via",
     previous: "Edizione precedente",
     next: "Edizione successiva",
+    podcastListen: "Ascolta l'edizione",
+    podcastFallback: "Il tuo browser non supporta la riproduzione audio.",
+    podcastDownload: "Scarica l'mp3",
     updatedAt: (date: string) => `Pubblicata il ${date}`,
   },
   archive: {

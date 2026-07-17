@@ -1,25 +1,29 @@
 import { test, expect } from "@playwright/test";
+import { formatFullDate } from "../src/lib/dates";
 import { corpusDates } from "./helpers/corpus";
 
+// Date derivate dal corpus al momento del run, mai hardcoded: il
+// corpus è dinamico e i filename sono liberi (la data viene dall'H1).
+const dates = corpusDates();
+const oldestDate = dates[0]!;
+const latestDate = dates.at(-1)!;
+
 test.describe("permalink edizione", () => {
-  test("/edizioni/2026-07-14/ mostra l'edizione del 14 (filename variante)", async ({
+  test("ogni permalink mostra la data della propria edizione", async ({
     page,
   }) => {
-    await page.goto("/edizioni/2026-07-14/");
+    await page.goto(`/edizioni/${oldestDate}/`);
     await expect(page.locator(".edition-date")).toContainText(
-      "14 luglio 2026",
+      formatFullDate(new Date(oldestDate)),
     );
-    await expect(
-      page.getByRole("heading", { name: /sanzioni cyber congiunte/i }),
-    ).toBeVisible();
   });
 
   test("gli anchor delle storie sono navigabili", async ({ page }) => {
-    await page.goto("/edizioni/2026-07-16/");
+    await page.goto(`/edizioni/${latestDate}/`);
     const heroHeading = page.locator(".story--hero .story-title");
     const anchorId = await heroHeading.getAttribute("id");
     expect(anchorId).toMatch(/^[a-z0-9-]+$/);
-    await page.goto(`/edizioni/2026-07-16/#${anchorId}`);
+    await page.goto(`/edizioni/${latestDate}/#${anchorId}`);
     await expect(page.locator(`#${anchorId}`)).toBeInViewport();
   });
 
@@ -30,7 +34,6 @@ test.describe("permalink edizione", () => {
     const homeHero = await page
       .locator(".story--hero .story-title")
       .textContent();
-    const latestDate = corpusDates().at(-1)!;
     await page.goto(`/edizioni/${latestDate}/`);
     const permalinkHero = await page
       .locator(".story--hero .story-title")

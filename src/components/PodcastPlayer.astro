@@ -1,0 +1,40 @@
+---
+import { t } from "../i18n";
+
+interface Props {
+  src: string;
+}
+
+const { src } = Astro.props;
+const strings = t();
+---
+
+<div class="podcast">
+  <p class="podcast-kicker">{strings.edition.podcastListen}</p>
+  <audio class="podcast-audio" controls preload="metadata" src={src}>
+    {strings.edition.podcastFallback}
+    <a href={src}>{strings.edition.podcastDownload}</a>
+  </audio>
+</div>
+
+<style>
+  .podcast {
+    max-width: var(--measure);
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .podcast-kicker {
+    font-size: var(--text-kicker);
+    text-transform: uppercase;
+    letter-spacing: var(--kicker-tracking);
+    font-weight: 700;
+    margin: 0 0 var(--space-1);
+  }
+
+  .podcast-audio {
+    display: block;
+    width: 100%;
+  }
+</style>

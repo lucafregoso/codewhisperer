@@ -75,6 +75,28 @@ il tema è lo stesso.
 Le edizioni senza categorie restano valide: gli item finiscono in
 "senza categoria" e restano filtrabili per fonte e data.
 
+## Podcast (opzionale)
+
+Se l'edizione ha una versione audio, va droppata come
+`input/podcast/<basename>.mp3` — **stesso basename** del markdown:
+
+```
+input/2026-07-16.md
+input/podcast/2026-07-16.mp3
+```
+
+Regole:
+
+- Solo `.mp3`. Altre estensioni vengono ignorate.
+- Il matching è per basename esatto; il nome del file resta libero
+  (come per il markdown, la data dell'edizione viene dall'H1).
+- Il podcast è opzionale: un'edizione senza mp3 è valida e non mostra
+  il player.
+- Droppare mp3 e markdown **nello stesso commit** (lo script di
+  pubblicazione lo fa da solo se l'mp3 è accanto al file .md).
+
+Sul sito il player audio compare in testa alla pagina dell'edizione.
+
 ## Come pubblicare (per Hermes)
 
 Un solo comando dalla radice del repo:

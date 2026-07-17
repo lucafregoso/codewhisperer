@@ -37,9 +37,25 @@ if [[ ! -f "input/$BASENAME" ]]; then
   cp "$FILE" "input/$BASENAME"
 fi
 
+# 2b. Podcast opzionale: un mp3 con lo stesso basename accanto al .md
+#     viaggia nello stesso commit (docs/INGESTION.md §Podcast).
+PODCAST_SRC="${FILE%.md}.mp3"
+PODCAST_BASENAME=""
+if [[ -f "$PODCAST_SRC" ]]; then
+  PODCAST_BASENAME="$(basename "$PODCAST_SRC")"
+  mkdir -p input/podcast
+  if [[ ! -f "input/podcast/$PODCAST_BASENAME" ]]; then
+    cp "$PODCAST_SRC" "input/podcast/$PODCAST_BASENAME"
+  fi
+  echo "Podcast trovato: input/podcast/$PODCAST_BASENAME"
+fi
+
 # 3. Il drop giornaliero È la release giornaliera (costituzione §10)
 git checkout master
 git add "input/$BASENAME"
+if [[ -n "$PODCAST_BASENAME" ]]; then
+  git add "input/podcast/$PODCAST_BASENAME"
+fi
 git commit -m "content: edizione $DATE"
 
 if git remote get-url origin >/dev/null 2>&1; then

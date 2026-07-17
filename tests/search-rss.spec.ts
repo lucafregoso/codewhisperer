@@ -1,4 +1,16 @@
 import { test, expect } from "@playwright/test";
+import { corpusEditions } from "./helpers/corpus";
+
+// Contenuti derivati dal corpus al momento del run, mai hardcoded.
+const editions = corpusEditions();
+const latest = editions.at(-1)!;
+const totalStories = editions.reduce((n, e) => n + e.stories.length, 0);
+
+// Una parola distintiva dal titolo dell'ultima hero, per la ricerca.
+const searchWord = latest.stories[0]!.title
+  .split(/[^\p{L}\p{N}]+/u)
+  .filter((w) => w.length >= 6)
+  .sort((a, b) => b.length - a.length)[0];
 
 test.describe("rss", () => {
   test("/rss.xml è un feed valido con le storie di tutte le edizioni", async ({
@@ -8,9 +20,10 @@ test.describe("rss", () => {
     expect(res.status()).toBe(200);
     const xml = await res.text();
     expect(xml).toContain("<rss");
-    expect(xml).toContain("Hyundai rende Boston Dynamics");
-    expect(xml).toContain("/edizioni/2026-07-16/#");
     expect(xml).toContain("<language>it</language>");
+    expect(xml).toContain(`/edizioni/${latest.date}/#`);
+    const items = xml.match(/<item>/g) ?? [];
+    expect(items.length).toBeGreaterThanOrEqual(totalStories);
   });
 });
 
@@ -27,9 +40,10 @@ test.describe("ricerca", () => {
   });
 
   test("una query trova una storia del corpus", async ({ page }) => {
+    test.skip(!searchWord, "nessuna parola ricercabile nel titolo hero");
     await page.goto("/cerca/");
     const input = page.locator("#search input");
-    await input.fill("Boston Dynamics");
+    await input.fill(searchWord!);
     const results = page.locator(".pagefind-ui__result");
     await expect(results.first()).toBeVisible();
   });

@@ -40,6 +40,12 @@ pnpm gate         # check + test:unit + build + test — IL gate pre-merge
 - `src/i18n/index.ts` — stringhe UI (solo `it` attivo, struttura pronta).
 - `src/lib/url.ts` — `withBase()` obbligatorio per ogni href/asset interno.
 - `tests/regressions.spec.ts` — ogni voce guarda un bug reale: mai cancellarle.
+- I test NON presuppongono edizioni, contenuti o filename specifici in
+  `input/`: il corpus è dinamico (lo popolano gli scraper di Hermes).
+  I check di formato vivono su `tests/fixtures/`; i test e2e derivano
+  date/fonti dal corpus reale via `tests/helpers/corpus.ts` e fanno
+  skip esplicito quando una caratteristica manca (es. podcast: è
+  opzionale, non un vincolo).
 
 ## Git flow
 
