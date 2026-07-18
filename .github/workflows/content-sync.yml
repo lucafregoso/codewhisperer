@@ -1,0 +1,73 @@
+name: Sync rassegnai-daily
+
+# Le edizioni nascono in un altro ambiente e vengono pushate su
+# lucafregoso/rassegnai-daily: questo workflow aggiorna il pointer del
+# submodule e, se è cambiato, committa su master e fa partire il
+# deploy. Tre trigger:
+# - cron: rete di sicurezza, controlla ogni 30 minuti;
+# - repository_dispatch (content-update): per l'aggiornamento
+#   istantaneo, rassegnai-daily può notificare con un piccolo workflow
+#   (curl all'API dispatches con un PAT: vedi docs/INGESTION.md);
+# - manuale.
+#
+# Il push fatto col GITHUB_TOKEN non scatena altri workflow (regola
+# anti-loop di GitHub): il deploy viene invocato esplicitamente via
+# workflow_dispatch (permissions actions: write).
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  repository_dispatch:
+    types: [content-update]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: content-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Aggiorna submodule contenuti
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          ref: master
+          submodules: true
+
+      - name: Update submodule to latest remote
+        run: git submodule update --remote input/rassegnai-daily
+
+      - name: Detect changes
+        id: diff
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Nessun aggiornamento in rassegnai-daily."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push content update
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          SHA=$(git -C input/rassegnai-daily rev-parse --short HEAD)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add input/rassegnai-daily
+          git commit -m "content: sync rassegnai-daily @${SHA}"
+          git push origin master
+
+      # Il push sopra non genera eventi (GITHUB_TOKEN): il deploy — che
+      # rivalida tutto e non fa mai regredire il sito — parte da qui.
+      - name: Trigger deploy
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref master

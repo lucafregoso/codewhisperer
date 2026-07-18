@@ -9,3 +9,12 @@ export function withBase(path: string): string {
   const prefix = base.endsWith("/") ? base : `${base}/`;
   return `${prefix}${clean}`;
 }
+
+/**
+ * Src per immagini di contenuto: le path del sito ("/images/…",
+ * risolte dal loader) passano da withBase; le URL esterne restano
+ * intatte.
+ */
+export function assetSrc(url: string): string {
+  return url.startsWith("/") ? withBase(url) : url;
+}

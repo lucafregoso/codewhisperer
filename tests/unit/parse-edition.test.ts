@@ -1,10 +1,10 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { EDITION_DIRS } from "../../src/lib/content-dirs";
 import { parseEdition } from "../../src/lib/parser/parse-edition";
 import { EditionParseError } from "../../src/lib/parser/types";
 
-const INPUT = join(process.cwd(), "input");
 const FIXTURES = join(process.cwd(), "tests", "fixtures");
 
 const read = (dir: string, file: string) => readFileSync(join(dir, file), "utf8");
@@ -16,16 +16,26 @@ const read = (dir: string, file: string) => readFileSync(join(dir, file), "utf8"
 // specifici (un test che congela il corpus blocca il deploy della
 // prima edizione nuova: successo il 17 luglio 2026). I check puntuali
 // sul formato vivono sulle fixture in tests/fixtures/, che sono nostre.
-describe("parseEdition — corpus reale in input/", () => {
-  const files = readdirSync(INPUT).filter((f) => f.endsWith(".md"));
-  const editions = files.map((f) => parseEdition(read(INPUT, f)));
+describe("parseEdition — corpus reale (tutte le lane)", () => {
+  const files = EDITION_DIRS.flatMap((dir) => {
+    let names: string[] = [];
+    try {
+      names = readdirSync(join(process.cwd(), dir));
+    } catch {
+      return [];
+    }
+    return names
+      .filter((f) => f.endsWith(".md"))
+      .map((file) => ({ dir: join(process.cwd(), dir), file }));
+  });
+  const editions = files.map(({ dir, file }) => parseEdition(read(dir, file)));
 
   it("il corpus contiene almeno un'edizione (serve per la homepage)", () => {
     expect(files.length).toBeGreaterThanOrEqual(1);
   });
 
-  it.each(files)("parsa %s senza errori", (file) => {
-    const edition = parseEdition(read(INPUT, file));
+  it.each(files)("parsa $file senza errori", ({ dir, file }) => {
+    const edition = parseEdition(read(dir, file));
     expect(edition.masthead.length).toBeGreaterThan(0);
     expect(edition.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(Number.isNaN(Date.parse(edition.date))).toBe(false);
@@ -99,6 +109,26 @@ describe("parseEdition — contratto sulle fixture", () => {
     expect(edition.stories[0]?.body).not.toContain("Immagine");
   });
 
+  it("immagini markdown: cover nel preambolo e arte della storia, body pulito", () => {
+    const edition = parseEdition(read(FIXTURES, "edge-immagini.md"));
+    expect(edition.image).toEqual({
+      url: "images/cover-di-prova.jpg",
+      alt: "Cover di prova",
+    });
+    expect(edition.stories[0]?.image).toEqual({
+      url: "images/storia-uno.jpg",
+      alt: "Alt della storia uno",
+    });
+    expect(edition.stories[0]?.body).toContain("Corpo prima");
+    expect(edition.stories[0]?.body).toContain("Corpo dopo");
+    expect(edition.stories[0]?.body).not.toContain("![");
+    expect(edition.stories[1]?.image).toEqual({
+      url: "https://example.com/assoluta.jpg",
+      alt: "alt assoluto",
+    });
+    expect(edition.stories[2]?.image).toBeUndefined();
+  });
+
   it("la riga Immagine diventa story.image {url, alt}", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
     expect(edition.stories[0]?.image).toEqual({
@@ -130,6 +160,15 @@ describe("parseEdition — contratto sulle fixture", () => {
       "Corpo essenziale.\n**Immagine:** https://example.com/x.jpg alt senza separatore",
     );
     expect(() => parseEdition(senzaDash)).toThrow(EditionParseError);
+  });
+
+  it("immagine markdown malformata → EditionParseError, mai nel body", () => {
+    const base = read(FIXTURES, "edge-minimale.md");
+    const conTitolo = base.replace(
+      "Corpo essenziale.",
+      'Corpo essenziale.\n![alt](images/x.jpg "titolo non previsto")',
+    );
+    expect(() => parseEdition(conTitolo)).toThrow(EditionParseError);
   });
 
   it("riga Fonti senza link → EditionParseError con la riga giusta", () => {

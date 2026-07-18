@@ -26,8 +26,14 @@ jobs:
       BASE_PATH: ${{ vars.BASE_PATH || '/codewhisperer/' }}
 
     steps:
+      # Il contenuto vive nel submodule pubblico rassegnai-daily.
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          submodules: true
+
+      - name: Fetch LFS content (submodule)
+        run: git submodule foreach --recursive git lfs pull
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
