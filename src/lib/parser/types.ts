@@ -15,6 +15,12 @@ export interface SourceRef {
   note?: string;
 }
 
+export interface StoryImage {
+  url: string;
+  /** Alt dalla riga Immagine (dopo "—"); assente → fallback al titolo */
+  alt?: string;
+}
+
 export interface Story {
   /** Ordine editoriale 1..n dalla numerazione H3 */
   position: number;
@@ -26,6 +32,8 @@ export interface Story {
   /** Slug categorie emergenti; [] se la riga Categorie manca */
   categories: string[];
   sources: SourceRef[];
+  /** Arte del pezzo dalla riga **Immagine:** — opzionale */
+  image?: StoryImage;
 }
 
 export interface RadarItem {

@@ -47,10 +47,10 @@ palette e firme visive sono nostre.
    diversa per fascia), mai otto blocchi uguali.
 2. **Il colore è segnale, non decorazione.** Un accento di testata che
    marca ciò che si può fare o dove si è; mai sfondi decorativi a caso.
-3. **La tipografia è la nostra fotografia.** Niente foto nel corpus: il
-   peso, la scala e i glifi generati dal sistema fanno il lavoro delle
-   immagini. (Il contratto Hermes resta pronto ad accogliere immagini
-   future.)
+3. **Le immagini sono contenuto, mai decorazione.** Un'immagine
+   compare solo se l'edizione la fornisce (riga `**Immagine:**` di
+   Hermes); quando manca, il peso e la scala della tipografia portano
+   la pagina da soli — niente glifi generati, niente segnaposto.
 4. **Densità da quotidiano.** Righe piene, regole nette, poca aria
    cerimoniale: il lettore skimma, il layout lo accompagna.
 5. **Tutto funziona senza JavaScript.** Il contenuto e la lettura non

@@ -97,19 +97,26 @@ Regole:
 
 Sul sito il player audio compare in testa alla pagina dell'edizione.
 
-## Immagini (futuro, opzionale — non ancora renderizzate)
+## Immagini (opzionale, per storia)
 
-Quando Hermes saprà produrre o selezionare immagini, il contratto
-previsto è una riga opzionale dopo il corpo della storia:
+Una riga opzionale dopo il corpo della storia:
 
 ```markdown
 **Immagine:** https://esempio.com/foto.jpg — descrizione alt dell'immagine
 ```
 
-Oggi il parser ignora questa riga senza errori: Hermes può iniziare a
-emetterla in qualunque momento senza rompere nulla. Il rendering
-arriverà con una spec dedicata. Nel frattempo l'identità visiva delle
-storie è affidata agli stamp generativi derivati dallo slug.
+Regole:
+
+- URL assoluta e valida (un URL malformato fa fallire la build, come
+  ogni errore di contratto). L'alt dopo `—` è raccomandato; se manca,
+  il sito usa il titolo della storia.
+- Una sola immagine per storia; solo nelle storie di primo piano
+  (radar e feed lento non hanno immagini).
+- Senza riga `**Immagine:**` la storia esce solo tipografica: il
+  layout non riserva spazi vuoti.
+
+Sul sito: hero = immagine sotto il titolo; lead = sopra il titolo;
+indice = thumbnail. Il caricamento è lazy sotto il fold.
 
 ## Come pubblicare (per Hermes)
 

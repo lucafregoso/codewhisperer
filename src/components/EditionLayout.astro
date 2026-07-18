@@ -74,11 +74,11 @@ const index = sorted.slice(3);
 
   <div class="shell">
     <hr class="section-rule" aria-hidden="true" />
-    <section class="front-page" aria-label={strings.edition.lead}>
+    <div class="front">
       {hero && (
-        <div class="front-hero">
+        <section class="front-hero" aria-label={strings.edition.lead}>
           <StoryCard story={hero} variant="hero" />
-        </div>
+        </section>
       )}
       {leads.length > 0 && (
         <div class="front-leads">
@@ -87,15 +87,14 @@ const index = sorted.slice(3);
           ))}
         </div>
       )}
-    </section>
-
-    {index.length > 0 && (
-      <section class="front-index" aria-label={strings.edition.index}>
-        {index.map((story) => (
-          <StoryCard story={story} variant="index" />
-        ))}
-      </section>
-    )}
+      {index.length > 0 && (
+        <section class="front-index" aria-label={strings.edition.index}>
+          {index.map((story) => (
+            <StoryCard story={story} variant="index" />
+          ))}
+        </section>
+      )}
+    </div>
   </div>
 
   <div class="shell band">
@@ -180,19 +179,27 @@ const index = sorted.slice(3);
     text-wrap: pretty;
   }
 
-  .front-page {
+  /* Un solo grid ad aree: l'indice risale sotto l'hero, i lead
+     corrono in colonna a fianco — niente buchi (spec 012), ordine
+     di lettura DOM invariato (1, 2-3, 4+). */
+  .front {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: var(--space-3);
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "hero leads"
+      "index leads";
+    column-gap: var(--space-3);
     padding-block: var(--space-3);
   }
 
   .front-hero {
-    grid-column: span 8;
+    grid-area: hero;
+    padding-bottom: var(--space-3);
   }
 
   .front-leads {
-    grid-column: span 4;
+    grid-area: leads;
     display: grid;
     gap: var(--space-3);
     align-content: start;
@@ -201,7 +208,8 @@ const index = sorted.slice(3);
   }
 
   .front-index {
-    padding-bottom: var(--space-3);
+    grid-area: index;
+    align-self: start;
   }
 
   .band {
@@ -209,13 +217,13 @@ const index = sorted.slice(3);
   }
 
   @media (max-width: 56rem) {
-    .front-page {
+    .front {
       grid-template-columns: 1fr;
-    }
-
-    .front-hero,
-    .front-leads {
-      grid-column: auto;
+      grid-template-rows: none;
+      grid-template-areas:
+        "hero"
+        "leads"
+        "index";
     }
 
     .front-leads {
@@ -223,6 +231,7 @@ const index = sorted.slice(3);
       padding-left: 0;
       border-top: 1px solid var(--hairline);
       padding-top: var(--space-3);
+      padding-bottom: var(--space-3);
     }
   }
 </style>
