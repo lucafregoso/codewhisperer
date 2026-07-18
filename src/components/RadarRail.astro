@@ -15,8 +15,9 @@ const strings = t();
 {
   items.length > 0 && (
     <section class="radar full-bleed" aria-labelledby="radar-title">
-      <h2 class="kicker radar-title" id="radar-title">
+      <h2 class="radar-title" id="radar-title">
         {strings.edition.radar}
+        <span class="radar-count" aria-hidden="true">{items.length}</span>
       </h2>
       <ul class="radar-list" role="list">
         {items.map((item) => (
@@ -35,8 +36,24 @@ const strings = t();
     padding-block: var(--space-3);
   }
 
+  /* La banda Radar è il territorio del segnale. */
+  .radar.full-bleed::before {
+    background: var(--signal-surface);
+    border-top-color: var(--signal);
+  }
+
   .radar-title {
+    font-size: var(--text-headline);
+    text-transform: uppercase;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-1);
     margin: 0 0 var(--space-2);
+  }
+
+  .radar-count {
+    color: var(--signal);
+    font-size: var(--text-title);
   }
 
   .radar-list {
@@ -44,7 +61,7 @@ const strings = t();
     margin: 0;
     padding: 0;
     columns: 1;
-    column-gap: var(--space-3);
+    column-gap: var(--space-4);
     column-rule: 1px solid var(--hairline);
   }
 
@@ -55,20 +72,20 @@ const strings = t();
     margin-bottom: var(--space-2);
   }
 
-  @media (min-width: 48rem) {
+  @media (min-width: 56rem) {
     .radar-list {
       columns: 2;
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .radar-list {
-      columns: 3;
     }
   }
 
   .radar-text {
     font-size: var(--text-body-sm);
     margin-bottom: var(--space-1);
+  }
+
+  /* Su signal-surface il faint non regge AA (4.29:1): si promuove
+     a muted (8.3:1) l'attribuzione via dentro la banda. */
+  .radar :global(.source-via) {
+    color: var(--ink-muted);
   }
 </style>

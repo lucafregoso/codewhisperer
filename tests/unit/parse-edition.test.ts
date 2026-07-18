@@ -92,10 +92,12 @@ describe("parseEdition — contratto sulle fixture", () => {
     expect(edition.slowFeed?.source.slug).toBe("lobste-rs");
   });
 
-  it("la riga Categorie non finisce nel corpo della storia", () => {
+  it("le righe meta (Categorie, Fonti, Immagine) non finiscono nel corpo", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
     expect(edition.stories[0]?.body).not.toContain("Categorie");
     expect(edition.stories[0]?.body).not.toContain("Fonti");
+    // Riga riservata al contratto futuro: ignorata senza errori.
+    expect(edition.stories[0]?.body).not.toContain("Immagine");
   });
 
   it("edizione minimale: radar/feed/copertura opzionali", () => {

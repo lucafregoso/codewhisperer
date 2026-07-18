@@ -23,7 +23,11 @@ const strings = t();
       class="slow-quote"
       aria-hidden="true">”</span>
   </h3>
-  {slowFeed.author && <p class="slow-author">di {slowFeed.author}</p>}
+  {
+    slowFeed.author && (
+      <p class="slow-author">{strings.edition.byAuthor(slowFeed.author)}</p>
+    )
+  }
   <div class="slow-body" set:html={renderBlock(slowFeed.body)} />
   <SourceBadge source={slowFeed.source} />
 </section>
@@ -50,7 +54,7 @@ const strings = t();
   }
 
   .slow-quote {
-    color: var(--ink-faint);
+    color: var(--signal);
   }
 
   .slow-author {

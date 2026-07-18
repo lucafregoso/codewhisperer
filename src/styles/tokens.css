@@ -12,8 +12,14 @@
   --ink-faint: #6f6f6f;
   --rule: #111111;        /* regole di sezione, 3px */
   --hairline: #d9d9d9;    /* separatori di griglia, 1px */
-  --surface: #f4f4f2;     /* bande tinte (radar, colophon) */
+  --surface: #f4f4f2;     /* bande tinte (colophon) */
   --focus-ring: #1a56db;
+
+  /* L'arancio segnale: l'UNICO accento di testata (PRODUCT.md,
+     "Il colore è segnale, non decorazione"). AA 4.9:1 su paper;
+     il surface è la tinta banda keyed sullo hue. */
+  --signal: #c64400;
+  --signal-surface: #fbeadd;
 
   /* Accent ciclici per categorie emergenti (AA su paper e ink) */
   --accent-0: #b3261e;
@@ -38,7 +44,7 @@
   --text-deck: 1.18rem;
   --text-title: 1.35rem;
   --text-headline: clamp(1.6rem, 2.6vw, 2.3rem);
-  --text-hero: clamp(2.4rem, 6vw, 4.8rem);
+  --text-hero: clamp(2.1rem, 3.8vw, 3.4rem);
 
   /* Layout */
   --shell: 76rem;
@@ -61,6 +67,9 @@
   --hairline: #3a3a3a;
   --surface: #1d1d1c;
   --focus-ring: #7aa2ff;
+
+  --signal: #ff8a4d;
+  --signal-surface: #281910;
 
   --accent-0: #ff6f61;
   --accent-1: #7aa2ff;

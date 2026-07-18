@@ -35,6 +35,8 @@ const it = {
   edition: {
     editionOf: (date: string) => `Edizione del ${date}`,
     lead: "In primo piano",
+    index: "Le altre storie dell'edizione",
+    byAuthor: (author: string) => `di ${author}`,
     radar: "Radar",
     slowFeed: "Dal feed lento",
     coverage: "Nota di copertura",

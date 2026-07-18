@@ -1,0 +1,43 @@
+---
+import { stampMarks } from "../lib/stamp";
+
+interface Props {
+  seed: string;
+  cols: number;
+  rows: number;
+  class?: string;
+}
+
+const { seed, cols, rows, class: className } = Astro.props;
+const CELL = 10;
+const marks = stampMarks(seed, cols, rows);
+---
+
+<svg
+  class:list={["stamp", className]}
+  viewBox={`0 0 ${cols * CELL} ${rows * CELL}`}
+  aria-hidden="true"
+  focusable="false"
+>
+  {
+    marks.map(({ col, row, kind, signal }) => {
+      const x = col * CELL;
+      const y = row * CELL;
+      const fill = signal ? "var(--signal)" : "currentColor";
+      if (kind === "dot") {
+        return <circle cx={x + 5} cy={y + 5} r={2.3} fill={fill} />;
+      }
+      if (kind === "dash") {
+        return <rect x={x + 1} y={y + 3.8} width={8} height={2.4} fill={fill} />;
+      }
+      return <rect x={x + 1.5} y={y + 1.5} width={7} height={7} fill={fill} />;
+    })
+  }
+</svg>
+
+<style>
+  .stamp {
+    display: block;
+    color: var(--ink);
+  }
+</style>
