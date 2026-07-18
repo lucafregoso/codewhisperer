@@ -96,8 +96,17 @@ describe("parseEdition — contratto sulle fixture", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
     expect(edition.stories[0]?.body).not.toContain("Categorie");
     expect(edition.stories[0]?.body).not.toContain("Fonti");
-    // Riga riservata al contratto futuro: ignorata senza errori.
     expect(edition.stories[0]?.body).not.toContain("Immagine");
+  });
+
+  it("la riga Immagine diventa story.image {url, alt}", () => {
+    const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
+    expect(edition.stories[0]?.image).toEqual({
+      url: "https://example.com/futura.jpg",
+      alt: "alt di prova, riga riservata al contratto futuro",
+    });
+    // Storia senza riga Immagine → nessuna immagine, nessun default.
+    expect(edition.stories[1]?.image).toBeUndefined();
   });
 
   it("edizione minimale: radar/feed/copertura opzionali", () => {
@@ -106,6 +115,21 @@ describe("parseEdition — contratto sulle fixture", () => {
     expect(edition.radar).toEqual([]);
     expect(edition.slowFeed).toBeUndefined();
     expect(edition.coverage).toBeUndefined();
+  });
+
+  it("riga Immagine malformata → EditionParseError, mai nel body", () => {
+    const base = read(FIXTURES, "edge-minimale.md");
+    const senzaUrl = base.replace(
+      "Corpo essenziale.",
+      "Corpo essenziale.\n**Immagine:**",
+    );
+    expect(() => parseEdition(senzaUrl)).toThrow(EditionParseError);
+
+    const senzaDash = base.replace(
+      "Corpo essenziale.",
+      "Corpo essenziale.\n**Immagine:** https://example.com/x.jpg alt senza separatore",
+    );
+    expect(() => parseEdition(senzaDash)).toThrow(EditionParseError);
   });
 
   it("riga Fonti senza link → EditionParseError con la riga giusta", () => {

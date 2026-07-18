@@ -3,7 +3,6 @@ import { t } from "../i18n";
 import type { Story } from "../lib/editions";
 import { renderInline } from "../lib/md";
 import SourceBadge from "./SourceBadge.astro";
-import StoryStamp from "./StoryStamp.astro";
 
 interface Props {
   story: Story;
@@ -14,26 +13,51 @@ const { story, variant } = Astro.props;
 const strings = t();
 const bodyHtml = renderInline(story.body);
 const HeadingTag = variant === "hero" ? "h2" : "h3";
+const image = story.image;
+const imageAlt = image?.alt ?? story.title;
 ---
 
 <article class:list={["story", `story--${variant}`]}>
   <span class="story-no" aria-hidden="true">{story.position}</span>
 
   {
-    variant === "hero" && (
-      <StoryStamp class="story-stamp" seed={story.slug} cols={7} rows={7} />
-    )
-  }
-  {
-    (variant === "lead" || variant === "index") && (
-      <StoryStamp class="story-stamp" seed={story.slug} cols={4} rows={3} />
+    variant === "index" && image && (
+      <img
+        class="story-thumb"
+        src={image.url}
+        alt={imageAlt}
+        loading="lazy"
+        decoding="async"
+      />
     )
   }
 
   <div class="story-main">
+    {
+      variant === "lead" && image && (
+        <img
+          class="story-image"
+          src={image.url}
+          alt={imageAlt}
+          loading="lazy"
+          decoding="async"
+        />
+      )
+    }
     <HeadingTag class="story-title" id={story.slug}>
       <a class="story-anchor" href={`#${story.slug}`}>{story.title}</a>
     </HeadingTag>
+    {
+      variant === "hero" && image && (
+        <img
+          class="story-image"
+          src={image.url}
+          alt={imageAlt}
+          loading="eager"
+          decoding="async"
+        />
+      )
+    }
     <p class="story-body" set:html={bodyHtml} />
     <footer class="story-sources">
       <span class="sr-only">{strings.edition.sources}:</span>
@@ -77,6 +101,25 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
     text-decoration-thickness: var(--rule-weight);
   }
 
+  /* L'arte del pezzo esiste solo se l'edizione la fornisce:
+     nessuno slot riservato, nessuna decorazione generata. */
+  .story-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    margin-block: var(--space-1) var(--space-2);
+  }
+
+  .story-thumb {
+    width: 5.5rem;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius);
+    margin-top: 0.3rem;
+    order: -1;
+  }
+
   .story-body {
     margin-block: var(--space-1) var(--space-1);
   }
@@ -114,19 +157,13 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
   /* ── Rango 1: hero ─────────────────────────────────────────── */
   .story--hero {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     gap: var(--space-1) var(--space-2);
     align-items: start;
   }
 
   .story--hero .story-no {
     font-size: var(--text-hero);
-  }
-
-  .story--hero :global(.story-stamp) {
-    width: clamp(6rem, 9vw, 8.5rem);
-    order: 3;
-    margin-top: 0.35rem;
   }
 
   .story--hero .story-title {
@@ -138,24 +175,12 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
     font-size: var(--text-deck);
   }
 
-  @media (max-width: 64rem) {
-    .story--hero :global(.story-stamp) {
-      display: none;
-    }
-  }
-
   /* ── Ranghi 2-3: lead ──────────────────────────────────────── */
   .story--lead {
     display: grid;
-    grid-template-columns: auto auto 1fr;
+    grid-template-columns: auto 1fr;
     gap: var(--space-1) var(--space-2);
     align-items: start;
-  }
-
-  .story--lead :global(.story-stamp) {
-    width: 2.2rem;
-    margin-top: 0.3rem;
-    order: -1;
   }
 
   .story--lead .story-no {
@@ -178,12 +203,17 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
   /* ── Ranghi 4+: riga d'indice da quotidiano ────────────────── */
   .story--index {
     display: grid;
-    grid-template-columns: auto auto 1fr;
+    grid-template-columns: auto 1fr;
     gap: var(--space-1) var(--space-2);
     align-items: start;
     padding-block: var(--space-2);
     border-top: 1px solid var(--hairline);
     transition: background-color 160ms var(--ease-out);
+  }
+
+  /* La colonna thumbnail esiste solo quando l'immagine c'è. */
+  .story--index:has(.story-thumb) {
+    grid-template-columns: auto auto 1fr;
   }
 
   .story--index:hover {
@@ -198,12 +228,6 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
 
   .story--index:hover .source-list li:not(:last-child)::after {
     color: var(--ink-muted);
-  }
-
-  .story--index :global(.story-stamp) {
-    width: 2.6rem;
-    margin-top: 0.3rem;
-    order: -1;
   }
 
   .story--index .story-no {
@@ -223,8 +247,14 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
   }
 
   @media (max-width: 48rem) {
-    .story--index :global(.story-stamp) {
+    .story--index .story-thumb {
       display: none;
+    }
+
+    /* :has() matcha sul DOM, non sulla visibilità: senza questo
+       reset la thumb nascosta lascerebbe una colonna fantasma. */
+    .story--index:has(.story-thumb) {
+      grid-template-columns: auto 1fr;
     }
   }
 </style>

@@ -38,11 +38,10 @@ introdurre un secondo accento di testata. `::selection` in segnale.
 
 - **Numerali di rango**: le storie sono una sequenza 1–8; il numero
   in segnale è il primo elemento di ogni anatomia.
-- **Stamp generativi** (`src/lib/stamp.ts` + `StoryStamp.astro`):
-  griglia deterministica di punti/tacche/blocchi derivata dallo slug
-  (FNV-1a → mulberry32), ~18% segnale, resto `currentColor`. Taglie:
-  hero 7×7 in spalla, lead e indice 4×3 avantitolo. È la fotografia
-  della testata: stesso slug → stesso stamp, per sempre.
+- **Immagini solo dal contratto**: l'arte del pezzo esiste solo se
+  l'edizione porta la riga `**Immagine:** URL — alt` (hero sotto il
+  titolo, lead sopra, indice thumbnail 4:3). Nessuna immagine →
+  nessuno slot riservato, mai grafica generata di riempimento.
 - **Barra segnale** corta sotto il nameplate; regole ink 3px
   (`--rule-weight`) tra le sezioni; hairline 1px nelle griglie.
 - **Bande full-bleed**: `::before` con `inset-inline: calc(50% - 50vw)`
@@ -52,17 +51,18 @@ introdurre un secondo accento di testata. `::selection` in segnale.
 ## Layout
 
 - Shell 76rem, misura 62ch, spazi 0.5/1/1.75/3rem.
-- **Prima pagina a ranghi**: hero 8 col + lead 4 col (hairline a
-  sinistra), poi indice denso full-width a righe. Tre anatomie, mai
-  otto blocchi uguali.
+- **Prima pagina a ranghi, senza buchi**: grid ad aree — hero in
+  alto a sinistra, l'indice denso risale subito sotto, i lead
+  corrono in colonna destra (hairline). Ordine DOM = ordine
+  editoriale 1..n. Tre anatomie, mai otto blocchi uguali.
 - Radar a 2 colonne CSS (`columns`), item con hairline.
-- Mobile: tutto in colonna, stamp nascosti sotto 48/64rem, nav
-  scrollabile senza scrollbar.
+- Mobile: tutto in colonna, thumbnail d'indice nascoste sotto 48rem,
+  nav scrollabile senza scrollbar.
 
 ## Components
 
 MastHead (nameplate + barra segnale) · EditionLayout (header meta con
-jump di data, ranghi) · StoryCard (hero/lead/index) · StoryStamp ·
+jump di data, ranghi) · StoryCard (hero/lead/index) ·
 SourceBadge (pieno su /fonte/, sussurrato nelle storie) · RadarRail ·
 SlowFeedFeature (serif italic, virgolette segnale) · CoverageFooter
 (colophon, numeri tabulari, ratio in segnale) · PodcastPlayer (audio

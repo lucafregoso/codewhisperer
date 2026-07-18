@@ -18,6 +18,11 @@ const story = z.object({
   body: z.string().min(1),
   categories: z.array(slug),
   sources: z.array(sourceRef).min(1),
+  // Arte del pezzo (contratto **Immagine:**): un URL rotto fa
+  // fallire la build come ogni altro errore di contratto.
+  image: z
+    .object({ url: z.string().url(), alt: z.string().optional() })
+    .optional(),
 });
 
 const radarItem = z.object({

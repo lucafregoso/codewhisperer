@@ -42,9 +42,11 @@ function parseCategories(raw: string): string[] {
 
 const CATEGORIE_LINE = /^\s*\*\*Categorie:\*\*\s*(.+)$/i;
 const FONTI_LINE = /^\s*\*\*Fonti:\*\*/i;
-// Riservata al contratto futuro (INGESTION.md §Immagini): oggi si
-// ignora senza errori, così Hermes può emetterla in anticipo.
-const IMMAGINE_LINE = /^\s*\*\*Immagine:\*\*/i;
+// Contratto INGESTION.md §Immagini: URL con alt opzionale dopo "—".
+// La detection è lassista sul prefisso: una riga Immagine malformata
+// DEVE rompere la build (costituzione §1), non finire nel body.
+const IMMAGINE_PREFIX = /^\s*\*\*Immagine:\*\*/i;
+const IMMAGINE_LINE = /^\s*\*\*Immagine:\*\*\s*(\S+)(?:\s+[—–]\s+(.+))?\s*$/i;
 const RADAR_CAT_SUFFIX = /\s*\[cat:\s*([^\]]+)\]\s*$/i;
 const TRAILING_SOURCE = /\s+[—–]\s+(\[[^\]]+\]\([^)\s]+\))\s*$/;
 
@@ -57,6 +59,7 @@ function parseStories(lines: Line[]): Story[] {
     body: string[];
     sources?: Story["sources"];
     categories: string[];
+    image?: Story["image"];
   } | null = null;
 
   const flush = () => {
@@ -74,6 +77,7 @@ function parseStories(lines: Line[]): Story[] {
       body: current.body.join("\n").trim(),
       categories: current.categories,
       sources: current.sources,
+      ...(current.image ? { image: current.image } : {}),
     });
     current = null;
   };
@@ -101,7 +105,18 @@ function parseStories(lines: Line[]): Story[] {
       current.categories = parseCategories(categorie[1]!);
       continue;
     }
-    if (IMMAGINE_LINE.test(line.text)) {
+    if (IMMAGINE_PREFIX.test(line.text)) {
+      const immagine = line.text.match(IMMAGINE_LINE);
+      if (!immagine) {
+        throw new EditionParseError(
+          `Riga **Immagine:** malformata (attesa: **Immagine:** URL — alt) (riga ${line.number})`,
+          line.number,
+        );
+      }
+      current.image = {
+        url: immagine[1]!,
+        ...(immagine[2] ? { alt: immagine[2].trim() } : {}),
+      };
       continue;
     }
     current.body.push(line.text);

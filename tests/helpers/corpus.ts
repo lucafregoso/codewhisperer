@@ -24,6 +24,19 @@ export function corpusDates(): string[] {
 }
 
 /**
+ * Le storie del corpus che portano un'immagine (riga **Immagine:**).
+ * Vuoto finché Hermes non le emette: i test di presenza fanno skip,
+ * quelli di assenza girano.
+ */
+export function corpusImages(): { date: string; slug: string }[] {
+  return corpusEditions().flatMap((e) =>
+    e.stories
+      .filter((s) => s.image)
+      .map((s) => ({ date: e.date, slug: s.slug })),
+  );
+}
+
+/**
  * Le coppie edizione↔podcast presenti nel corpus (matching identico al
  * loader: stesso basename, estensione .mp3). Vuoto se input/podcast/
  * non esiste o non combacia nulla: i test che ne dipendono fanno skip.
