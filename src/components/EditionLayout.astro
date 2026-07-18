@@ -25,7 +25,7 @@ const { stories, radar, slowFeed, coverage, podcast } = edition.data;
 const sorted = [...stories].sort((a, b) => a.position - b.position);
 const hero = sorted[0];
 const leads = sorted.slice(1, 3);
-const grid = sorted.slice(3);
+const index = sorted.slice(3);
 ---
 
 <MastHead>
@@ -34,9 +34,34 @@ const grid = sorted.slice(3);
 
 <main id="main" data-pagefind-body>
   <header class="edition-header shell">
-    <h1 class="edition-date">
-      {strings.edition.editionOf(formatFullDate(edition.data.date))}
-    </h1>
+    <div class="edition-meta">
+      <h1 class="edition-date">
+        <span class="edition-mark" aria-hidden="true"></span>
+        {strings.edition.editionOf(formatFullDate(edition.data.date))}
+      </h1>
+      {
+        (prev || next) && (
+          <nav class="edition-jump" aria-label={strings.nav.editions}>
+            {prev && (
+              <a
+                class="edition-jump-link"
+                href={withBase(`/edizioni/${prev.id}/`)}
+              >
+                ← {formatFullDate(prev.data.date)}
+              </a>
+            )}
+            {next && (
+              <a
+                class="edition-jump-link"
+                href={withBase(`/edizioni/${next.id}/`)}
+              >
+                {formatFullDate(next.data.date)} →
+              </a>
+            )}
+          </nav>
+        )
+      }
+    </div>
     <p class="edition-tldr" set:html={renderInline(edition.data.tldr)} />
     {
       podcast && (
@@ -64,15 +89,12 @@ const grid = sorted.slice(3);
       )}
     </section>
 
-    {grid.length > 0 && (
-      <>
-        <hr class="section-rule" aria-hidden="true" />
-        <section class="front-grid" aria-label={strings.edition.lead}>
-          {grid.map((story) => (
-            <StoryCard story={story} variant="grid" />
-          ))}
-        </section>
-      </>
+    {index.length > 0 && (
+      <section class="front-index" aria-label={strings.edition.index}>
+        {index.map((story) => (
+          <StoryCard story={story} variant="index" />
+        ))}
+      </section>
     )}
   </div>
 
@@ -101,14 +123,53 @@ const grid = sorted.slice(3);
 
 <style>
   .edition-header {
-    padding-block: var(--space-3) var(--space-2);
+    padding-block: var(--space-2) var(--space-2);
+  }
+
+  .edition-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-2);
+    margin-bottom: var(--space-2);
   }
 
   .edition-date {
-    font-size: var(--text-headline);
+    font-size: var(--text-title);
     text-transform: uppercase;
-    letter-spacing: 0.01em;
-    margin: 0 0 var(--space-1);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+  }
+
+  .edition-mark {
+    inline-size: 0.62em;
+    block-size: 0.62em;
+    background: var(--signal);
+    flex: none;
+  }
+
+  .edition-jump {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .edition-jump-link {
+    font-family: var(--font-display);
+    font-size: var(--text-body-sm);
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--ink-muted);
+  }
+
+  .edition-jump-link:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--signal);
+    text-decoration-thickness: 2px;
   }
 
   .edition-tldr {
@@ -116,6 +177,7 @@ const grid = sorted.slice(3);
     color: var(--ink-muted);
     max-width: var(--measure);
     margin-bottom: 0;
+    text-wrap: pretty;
   }
 
   .front-page {
@@ -138,16 +200,8 @@ const grid = sorted.slice(3);
     padding-left: var(--space-3);
   }
 
-  .front-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-3);
-    padding-block: var(--space-3);
-  }
-
-  .front-grid > :global(.story:not(:first-child)) {
-    border-left: 1px solid var(--hairline);
-    padding-left: var(--space-3);
+  .front-index {
+    padding-bottom: var(--space-3);
   }
 
   .band {
@@ -165,17 +219,6 @@ const grid = sorted.slice(3);
     }
 
     .front-leads {
-      border-left: 0;
-      padding-left: 0;
-      border-top: 1px solid var(--hairline);
-      padding-top: var(--space-3);
-    }
-
-    .front-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .front-grid > :global(.story:not(:first-child)) {
       border-left: 0;
       padding-left: 0;
       border-top: 1px solid var(--hairline);

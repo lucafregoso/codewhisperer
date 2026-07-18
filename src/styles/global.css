@@ -59,8 +59,17 @@ video {
 }
 
 ::selection {
-  background: var(--ink);
+  background: var(--signal);
   color: var(--paper);
+}
+
+/* I link nel corpo del contenuto portano la sottolineatura segnale. */
+.story-body a,
+.radar-text a,
+.slow-body a,
+.edition-tldr a {
+  text-decoration-color: var(--signal);
+  text-decoration-thickness: 2px;
 }
 
 /* Utilità di sistema */

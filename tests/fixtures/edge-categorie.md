@@ -6,6 +6,7 @@
 
 ### 1. Storia con categorie esplicite
 Un corpo con **grassetto** e un [link inline](https://example.com/inline) per verificare il markdown.
+**Immagine:** https://example.com/futura.jpg — alt di prova, riga riservata al contratto futuro
 **Fonti:** [TechCrunch](https://techcrunch.com/2026/07/01/a) — nota uno; [Techmeme (Reuters)](https://www.techmeme.com/260701/p1#a) — nota due.
 **Categorie:** Intelligenza Artificiale, open-source
 

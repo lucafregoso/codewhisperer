@@ -72,6 +72,11 @@ const strings = t();
     font-size: var(--text-title);
     font-weight: var(--display-weight);
     font-variation-settings: "wdth" var(--display-width);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat:first-child dd {
+    color: var(--signal);
   }
 
   .coverage-unreachable {

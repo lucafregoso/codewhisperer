@@ -2,12 +2,12 @@
 import { t } from "../i18n";
 import type { Story } from "../lib/editions";
 import { renderInline } from "../lib/md";
-import CategoryKicker from "./CategoryKicker.astro";
 import SourceBadge from "./SourceBadge.astro";
+import StoryStamp from "./StoryStamp.astro";
 
 interface Props {
   story: Story;
-  variant: "hero" | "lead" | "grid";
+  variant: "hero" | "lead" | "index";
 }
 
 const { story, variant } = Astro.props;
@@ -17,21 +17,35 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
 ---
 
 <article class:list={["story", `story--${variant}`]}>
-  <CategoryKicker categories={story.categories} />
-  <HeadingTag class="story-title" id={story.slug}>
-    <a class="story-anchor" href={`#${story.slug}`}>{story.title}</a>
-  </HeadingTag>
-  <p class="story-body" set:html={bodyHtml} />
-  <footer class="story-sources">
-    <span class="sr-only">{strings.edition.sources}:</span>
-    <ul class="source-list" role="list">
-      {story.sources.map((source) => (
-        <li>
-          <SourceBadge source={source} />
-        </li>
-      ))}
-    </ul>
-  </footer>
+  <span class="story-no" aria-hidden="true">{story.position}</span>
+
+  {
+    variant === "hero" && (
+      <StoryStamp class="story-stamp" seed={story.slug} cols={7} rows={7} />
+    )
+  }
+  {
+    (variant === "lead" || variant === "index") && (
+      <StoryStamp class="story-stamp" seed={story.slug} cols={4} rows={3} />
+    )
+  }
+
+  <div class="story-main">
+    <HeadingTag class="story-title" id={story.slug}>
+      <a class="story-anchor" href={`#${story.slug}`}>{story.title}</a>
+    </HeadingTag>
+    <p class="story-body" set:html={bodyHtml} />
+    <footer class="story-sources">
+      <span class="sr-only">{strings.edition.sources}:</span>
+      <ul class="source-list" role="list">
+        {story.sources.map((source) => (
+          <li>
+            <SourceBadge source={source} />
+          </li>
+        ))}
+      </ul>
+    </footer>
+  </div>
 </article>
 
 <style>
@@ -39,22 +53,18 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
     min-inline-size: 0;
   }
 
+  .story-no {
+    font-family: var(--font-display);
+    font-variation-settings: "wdth" var(--display-width);
+    font-weight: var(--display-weight);
+    color: var(--signal);
+    line-height: 0.82;
+    user-select: none;
+  }
+
   .story-title {
     scroll-margin-top: var(--space-4);
     margin-block: 0 var(--space-1);
-  }
-
-  .story--hero .story-title {
-    font-size: var(--text-hero);
-    letter-spacing: -0.01em;
-  }
-
-  .story--lead .story-title {
-    font-size: var(--text-headline);
-  }
-
-  .story--grid .story-title {
-    font-size: var(--text-title);
   }
 
   .story-anchor {
@@ -63,21 +73,12 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
 
   .story-anchor:hover {
     text-decoration: underline;
+    text-decoration-color: var(--signal);
     text-decoration-thickness: var(--rule-weight);
   }
 
   .story-body {
     margin-block: var(--space-1) var(--space-1);
-  }
-
-  .story--hero .story-body {
-    font-size: var(--text-deck);
-  }
-
-  .story--grid .story-body,
-  .story--lead .story-body {
-    font-size: var(--text-body-sm);
-    color: var(--ink-muted);
   }
 
   .source-list {
@@ -86,6 +87,144 @@ const HeadingTag = variant === "hero" ? "h2" : "h3";
     padding: 0;
     display: flex;
     flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-1);
+  }
+
+  /* Nel contesto storia le fonti sono un sussurro: peso normale,
+     faint, separatore tipografico. Il badge pieno vive su /fonte/. */
+  .source-list :global(.source-badge) {
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--ink-faint);
+    border-bottom-color: transparent;
+  }
+
+  .source-list :global(.source-badge:hover) {
+    color: var(--ink);
+    border-bottom-color: var(--signal);
+  }
+
+  .source-list li:not(:last-child)::after {
+    content: "·";
+    color: var(--ink-faint);
+    margin-left: var(--space-1);
+  }
+
+  /* ── Rango 1: hero ─────────────────────────────────────────── */
+  .story--hero {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     gap: var(--space-1) var(--space-2);
+    align-items: start;
+  }
+
+  .story--hero .story-no {
+    font-size: var(--text-hero);
+  }
+
+  .story--hero :global(.story-stamp) {
+    width: clamp(6rem, 9vw, 8.5rem);
+    order: 3;
+    margin-top: 0.35rem;
+  }
+
+  .story--hero .story-title {
+    font-size: var(--text-hero);
+    letter-spacing: -0.01em;
+  }
+
+  .story--hero .story-body {
+    font-size: var(--text-deck);
+  }
+
+  @media (max-width: 64rem) {
+    .story--hero :global(.story-stamp) {
+      display: none;
+    }
+  }
+
+  /* ── Ranghi 2-3: lead ──────────────────────────────────────── */
+  .story--lead {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: var(--space-1) var(--space-2);
+    align-items: start;
+  }
+
+  .story--lead :global(.story-stamp) {
+    width: 2.2rem;
+    margin-top: 0.3rem;
+    order: -1;
+  }
+
+  .story--lead .story-no {
+    font-size: var(--text-headline);
+  }
+
+  .story--lead .story-title {
+    font-size: var(--text-headline);
+  }
+
+  .story--lead .story-body,
+  .story--lead .story-sources {
+    font-size: var(--text-body-sm);
+  }
+
+  .story--lead .story-body {
+    color: var(--ink-muted);
+  }
+
+  /* ── Ranghi 4+: riga d'indice da quotidiano ────────────────── */
+  .story--index {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    gap: var(--space-1) var(--space-2);
+    align-items: start;
+    padding-block: var(--space-2);
+    border-top: 1px solid var(--hairline);
+    transition: background-color 160ms var(--ease-out);
+  }
+
+  .story--index:hover {
+    background-color: var(--signal-surface);
+  }
+
+  /* In hover il fondo diventa signal-surface: il faint scala a muted
+     per restare AA (4.5:1 su testo piccolo). */
+  .story--index:hover .source-list :global(.source-badge) {
+    color: var(--ink-muted);
+  }
+
+  .story--index:hover .source-list li:not(:last-child)::after {
+    color: var(--ink-muted);
+  }
+
+  .story--index :global(.story-stamp) {
+    width: 2.6rem;
+    margin-top: 0.3rem;
+    order: -1;
+  }
+
+  .story--index .story-no {
+    font-size: var(--text-title);
+    min-width: 1.6ch;
+    text-align: right;
+  }
+
+  .story--index .story-title {
+    font-size: var(--text-title);
+  }
+
+  .story--index .story-body {
+    font-size: var(--text-body-sm);
+    color: var(--ink-muted);
+    margin-block: var(--space-1) var(--space-1);
+  }
+
+  @media (max-width: 48rem) {
+    .story--index :global(.story-stamp) {
+      display: none;
+    }
   }
 </style>

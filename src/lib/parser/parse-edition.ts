@@ -42,6 +42,9 @@ function parseCategories(raw: string): string[] {
 
 const CATEGORIE_LINE = /^\s*\*\*Categorie:\*\*\s*(.+)$/i;
 const FONTI_LINE = /^\s*\*\*Fonti:\*\*/i;
+// Riservata al contratto futuro (INGESTION.md §Immagini): oggi si
+// ignora senza errori, così Hermes può emetterla in anticipo.
+const IMMAGINE_LINE = /^\s*\*\*Immagine:\*\*/i;
 const RADAR_CAT_SUFFIX = /\s*\[cat:\s*([^\]]+)\]\s*$/i;
 const TRAILING_SOURCE = /\s+[—–]\s+(\[[^\]]+\]\([^)\s]+\))\s*$/;
 
@@ -96,6 +99,9 @@ function parseStories(lines: Line[]): Story[] {
     const categorie = line.text.match(CATEGORIE_LINE);
     if (categorie) {
       current.categories = parseCategories(categorie[1]!);
+      continue;
+    }
+    if (IMMAGINE_LINE.test(line.text)) {
       continue;
     }
     current.body.push(line.text);

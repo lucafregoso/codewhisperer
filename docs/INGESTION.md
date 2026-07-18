@@ -97,6 +97,20 @@ Regole:
 
 Sul sito il player audio compare in testa alla pagina dell'edizione.
 
+## Immagini (futuro, opzionale — non ancora renderizzate)
+
+Quando Hermes saprà produrre o selezionare immagini, il contratto
+previsto è una riga opzionale dopo il corpo della storia:
+
+```markdown
+**Immagine:** https://esempio.com/foto.jpg — descrizione alt dell'immagine
+```
+
+Oggi il parser ignora questa riga senza errori: Hermes può iniziare a
+emetterla in qualunque momento senza rompere nulla. Il rendering
+arriverà con una spec dedicata. Nel frattempo l'identità visiva delle
+storie è affidata agli stamp generativi derivati dallo slug.
+
 ## Come pubblicare (per Hermes)
 
 Un solo comando dalla radice del repo:

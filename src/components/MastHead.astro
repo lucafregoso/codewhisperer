@@ -33,6 +33,9 @@ const strings = t();
       <ThemeToggle />
     </nav>
   </div>
+  <div class="shell">
+    <span class="signal-bar" aria-hidden="true"></span>
+  </div>
   <hr class="section-rule" aria-hidden="true" />
 </header>
 
@@ -78,6 +81,16 @@ const strings = t();
   .masthead-link:hover,
   .masthead-link[aria-current="page"] {
     text-decoration: underline;
-        text-underline-offset: 4px;
+    text-decoration-color: var(--signal);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+  }
+
+  /* La firma di testata: barra segnale corta sotto il nameplate. */
+  .signal-bar {
+    display: block;
+    inline-size: clamp(4rem, 12vw, 7rem);
+    block-size: var(--rule-weight);
+    background: var(--signal);
   }
 </style>
