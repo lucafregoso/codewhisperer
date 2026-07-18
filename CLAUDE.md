@@ -23,10 +23,17 @@ pnpm gate         # check + test:unit + build + test — IL gate pre-merge
 
 ## Contenuto
 
-- `input/*.md` — le rassegne di Hermes, **unica fonte di verità**. Mai
-  modificarle a mano, mai convertirle: il parsing è a build time
-  (`src/lib/editions-loader.ts` + `src/lib/parser/`). La data si estrae
-  dall'H1 (`Edizione del 16 luglio 2026`), mai dal filename.
+- Le rassegne arrivano dal **submodule** `input/rassegnai-daily`
+  (repo privato, Git LFS per jpg/mp3): `editions/*.md` + `images/` +
+  `podcast/`. La lane manuale `input/*.md` resta per emergenze (date
+  duplicate tra le lane = build rotta). Mai modificare i contenuti a
+  mano, mai convertirli: parsing a build time
+  (`src/lib/editions-loader.ts` + `src/lib/parser/`), data dall'H1,
+  mai dal filename. Path sorgenti in `src/lib/content-dirs.ts`.
+- Setup locale: `git submodule update --init` poi
+  `git -C input/rassegnai-daily lfs pull`. Aggiornare i contenuti:
+  `git submodule update --remote input/rassegnai-daily` (in CI lo fa
+  il workflow content-sync ogni 30' + repository_dispatch).
 - Il contratto di ingestione per Hermes è `docs/INGESTION.md`.
 - Categorie e fonti sono **emergenti** dal corpus: niente enum fissi.
   Alias/normalizzazioni in `src/data/source-aliases.ts`.

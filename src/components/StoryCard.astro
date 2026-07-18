@@ -2,6 +2,7 @@
 import { t } from "../i18n";
 import type { Story } from "../lib/editions";
 import { renderInline } from "../lib/md";
+import { assetSrc } from "../lib/url";
 import SourceBadge from "./SourceBadge.astro";
 
 interface Props {
@@ -24,7 +25,7 @@ const imageAlt = image?.alt ?? story.title;
     variant === "index" && image && (
       <img
         class="story-thumb"
-        src={image.url}
+        src={assetSrc(image.url)}
         alt={imageAlt}
         loading="lazy"
         decoding="async"
@@ -37,7 +38,7 @@ const imageAlt = image?.alt ?? story.title;
       variant === "lead" && image && (
         <img
           class="story-image"
-          src={image.url}
+          src={assetSrc(image.url)}
           alt={imageAlt}
           loading="lazy"
           decoding="async"
@@ -51,7 +52,7 @@ const imageAlt = image?.alt ?? story.title;
       variant === "hero" && image && (
         <img
           class="story-image"
-          src={image.url}
+          src={assetSrc(image.url)}
           alt={imageAlt}
           loading="eager"
           decoding="async"

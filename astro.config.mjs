@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { loadEnv } from 'vite';
-import podcastAssets from './src/integrations/podcast-assets.mjs';
+import contentAssets from './src/integrations/content-assets.mjs';
 
 // Public deployment configuration comes from an untracked .env.local or from
 // GitHub Actions repository variables. Playwright forces a local, base-less
@@ -17,5 +17,5 @@ export default defineConfig({
   base: isPlaywright
     ? '/'
     : env.BASE_PATH || '/codewhisperer/',
-  integrations: [sitemap(), podcastAssets()],
+  integrations: [sitemap(), contentAssets()],
 });

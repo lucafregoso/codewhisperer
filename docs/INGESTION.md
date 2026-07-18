@@ -97,28 +97,73 @@ Regole:
 
 Sul sito il player audio compare in testa alla pagina dell'edizione.
 
-## Immagini (opzionale, per storia)
+## Immagini (opzionale)
 
-Una riga opzionale dopo il corpo della storia:
+Due sintassi equivalenti, entrambe su riga propria:
 
 ```markdown
-**Immagine:** https://esempio.com/foto.jpg — descrizione alt dell'immagine
+![Descrizione alt](images/2026-07-18-story6.jpg)
+**Immagine:** https://esempio.com/foto.jpg — descrizione alt
 ```
 
-Regole:
+- La sintassi markdown standard è quella della lane rassegnai-daily:
+  path relativa alla cartella `editions/`, file in `editions/images/`
+  (un riferimento a un file inesistente fa fallire la build).
+- La riga `**Immagine:**` accetta URL assolute http(s).
+- **Cover dell'edizione**: un'immagine markdown nel preambolo (tra il
+  TLDR e la prima sezione, es. `![Hero](images/DATA-hero.jpg)`) è la
+  copertina, resa in testa alla pagina.
+- **Arte della storia**: la prima immagine nel corpo di una storia;
+  la riga non compare mai nel testo. Una per storia; radar e feed
+  lento non hanno immagini.
+- L'alt è raccomandato; se manca, il sito usa il titolo della storia.
+- Senza immagini la storia esce solo tipografica: il layout non
+  riserva spazi vuoti.
 
-- URL assoluta e valida (un URL malformato fa fallire la build, come
-  ogni errore di contratto). L'alt dopo `—` è raccomandato; se manca,
-  il sito usa il titolo della storia.
-- Una sola immagine per storia; solo nelle storie di primo piano
-  (radar e feed lento non hanno immagini).
-- Senza riga `**Immagine:**` la storia esce solo tipografica: il
-  layout non riserva spazi vuoti.
+Sul sito: cover in testa all'edizione; hero = immagine sotto il
+titolo; lead = sopra il titolo; indice = thumbnail 4:3. Lazy sotto il
+fold.
 
-Sul sito: hero = immagine sotto il titolo; lead = sopra il titolo;
-indice = thumbnail. Il caricamento è lazy sotto il fold.
+## La lane rassegnai-daily (sorgente canonica)
 
-## Come pubblicare (per Hermes)
+Le edizioni prodotte nell'ambiente esterno vengono pushate su
+`github.com/lucafregoso/rassegnai-daily` (privato, Git LFS per
+jpg/mp3), montato qui come **submodule** in `input/rassegnai-daily`:
+
+```
+editions/YYYY-MM-DD.md        # la rassegna (formato di questo file)
+editions/images/*.jpg         # cover e immagini storia (LFS)
+editions/podcast/YYYY-MM-DD.mp3  # audio (LFS, basename = edizione)
+```
+
+Il workflow `content-sync` di questo repo controlla il subrepo ogni
+30 minuti (e a comando): se ci sono commit nuovi aggiorna il pointer,
+committa su master e fa partire il deploy. Per l'aggiornamento
+**istantaneo**, aggiungere in rassegnai-daily un workflow di notifica:
+
+```yaml
+# .github/workflows/notify.yml (in rassegnai-daily)
+on: { push: { branches: [main] } }
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -sf -X POST \
+            -H "Authorization: Bearer ${{ secrets.CODEWHISPERER_PAT }}" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/lucafregoso/codewhisperer/dispatches \
+            -d '{"event_type":"content-update"}'
+```
+
+(`CODEWHISPERER_PAT`: fine-grained PAT con contents:read+write su
+codewhisperer. Senza notifica resta il cron.)
+
+**Attenzione alle date**: una data presente in entrambe le lane
+(`input/*.md` e `editions/*.md`) fa fallire la build — la lane
+manuale serve solo per drop d'emergenza di date non coperte.
+
+## Come pubblicare a mano (lane di emergenza)
 
 Un solo comando dalla radice del repo:
 

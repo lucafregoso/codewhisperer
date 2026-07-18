@@ -3,7 +3,7 @@ import { t } from "../i18n";
 import type { Edition } from "../lib/editions";
 import { formatFullDate } from "../lib/dates";
 import { renderInline } from "../lib/md";
-import { withBase } from "../lib/url";
+import { assetSrc, withBase } from "../lib/url";
 import CoverageFooter from "./CoverageFooter.astro";
 import EditionNav from "./EditionNav.astro";
 import MastHead from "./MastHead.astro";
@@ -68,6 +68,21 @@ const index = sorted.slice(3);
         <PodcastPlayer
           src={withBase(`/podcast/${encodeURIComponent(podcast.file)}`)}
         />
+      )
+    }
+    {
+      edition.data.image && (
+        <figure class="edition-cover">
+          <img
+            src={assetSrc(edition.data.image.url)}
+            alt={
+              edition.data.image.alt ??
+              strings.edition.editionOf(formatFullDate(edition.data.date))
+            }
+            loading="eager"
+            decoding="async"
+          />
+        </figure>
       )
     }
   </header>
@@ -177,6 +192,17 @@ const index = sorted.slice(3);
     max-width: var(--measure);
     margin-bottom: 0;
     text-wrap: pretty;
+  }
+
+  .edition-cover {
+    margin: var(--space-2) 0 0;
+  }
+
+  .edition-cover img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
   }
 
   /* Un solo grid ad aree: l'indice risale sotto l'hero, i lead

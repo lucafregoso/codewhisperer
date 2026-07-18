@@ -11,6 +11,19 @@ const sourceRef = z.object({
   note: z.string().optional(),
 });
 
+// Arte del pezzo / cover: URL esterna http(s) oppure path del sito
+// ("/images/…", già risolta e verificata dal loader).
+const imageRef = z.object({
+  url: z
+    .string()
+    .refine(
+      (v) =>
+        /^(https?:)?\/\//.test(v) || (v.startsWith("/") && !v.startsWith("//")),
+      { message: "URL immagine non valida (http(s) o path del sito)" },
+    ),
+  alt: z.string().optional(),
+});
+
 const story = z.object({
   position: z.number().int().positive(),
   slug,
@@ -18,11 +31,7 @@ const story = z.object({
   body: z.string().min(1),
   categories: z.array(slug),
   sources: z.array(sourceRef).min(1),
-  // Arte del pezzo (contratto **Immagine:**): un URL rotto fa
-  // fallire la build come ogni altro errore di contratto.
-  image: z
-    .object({ url: z.string().url(), alt: z.string().optional() })
-    .optional(),
+  image: imageRef.optional(),
 });
 
 const radarItem = z.object({
@@ -38,6 +47,8 @@ const editions = defineCollection({
       date: z.coerce.date(),
       masthead: z.string().min(1),
       tldr: z.string().min(1),
+      // Cover dell'edizione (immagine markdown nel preambolo).
+      image: imageRef.optional(),
       file: z.string().min(1),
       // Audio dell'edizione: input/podcast/<basename>.mp3, opzionale.
       podcast: z.object({ file: z.string().min(1) }).optional(),

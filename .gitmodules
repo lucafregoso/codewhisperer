@@ -1,0 +1,3 @@
+[submodule "input/rassegnai-daily"]
+	path = input/rassegnai-daily
+	url = https://github.com/lucafregoso/rassegnai-daily.git

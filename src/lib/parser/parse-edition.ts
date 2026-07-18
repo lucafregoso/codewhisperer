@@ -47,6 +47,12 @@ const FONTI_LINE = /^\s*\*\*Fonti:\*\*/i;
 // DEVE rompere la build (costituzione §1), non finire nel body.
 const IMMAGINE_PREFIX = /^\s*\*\*Immagine:\*\*/i;
 const IMMAGINE_LINE = /^\s*\*\*Immagine:\*\*\s*(\S+)(?:\s+[—–]\s+(.+))?\s*$/i;
+// Immagine markdown standard su riga propria (contratto rassegnai-daily):
+// `![alt](images/x.jpg)` — path relativa risolta dal loader, mai dal parser.
+// Prefisso lassista + match stretto: una riga-immagine malformata DEVE
+// rompere la build (costituzione §1), non finire grezza nel body.
+const MD_IMAGE_PREFIX = /^\s*!\[/;
+const MD_IMAGE_LINE = /^\s*!\[([^\]]*)\]\(([^)\s]+)\)\s*$/;
 const RADAR_CAT_SUFFIX = /\s*\[cat:\s*([^\]]+)\]\s*$/i;
 const TRAILING_SOURCE = /\s+[—–]\s+(\[[^\]]+\]\([^)\s]+\))\s*$/;
 
@@ -113,9 +119,25 @@ function parseStories(lines: Line[]): Story[] {
           line.number,
         );
       }
-      current.image = {
+      current.image ??= {
         url: immagine[1]!,
         ...(immagine[2] ? { alt: immagine[2].trim() } : {}),
+      };
+      continue;
+    }
+    if (MD_IMAGE_PREFIX.test(line.text)) {
+      const mdImage = line.text.match(MD_IMAGE_LINE);
+      if (!mdImage) {
+        throw new EditionParseError(
+          `Immagine markdown malformata (attesa: ![alt](path), senza spazi o titoli nel target) (riga ${line.number})`,
+          line.number,
+        );
+      }
+      // La prima immagine è l'arte del pezzo; le righe-immagine non
+      // finiscono MAI nel body (renderInline le mostrerebbe grezze).
+      current.image ??= {
+        url: mdImage[2]!,
+        ...(mdImage[1]?.trim() ? { alt: mdImage[1].trim() } : {}),
       };
       continue;
     }
@@ -296,6 +318,21 @@ export function parseEdition(raw: string): RawEdition {
     .filter((l) => /^>\s?/.test(l.text))
     .map((l) => l.text.replace(/^>\s?/, "").trim());
 
+  // Cover dell'edizione: immagine markdown nel preambolo (prima del
+  // primo H2). Contratto rassegnai-daily: `![Hero](images/DATA-hero.jpg)`.
+  let cover: RawEdition["image"];
+  for (const line of lines) {
+    if (/^##\s+/.test(line.text)) break;
+    const m = line.text.match(MD_IMAGE_LINE);
+    if (m) {
+      cover = {
+        url: m[2]!,
+        ...(m[1]?.trim() ? { alt: m[1].trim() } : {}),
+      };
+      break;
+    }
+  }
+
   // Raggruppa le righe per sezione H2.
   const sections = new Map<SectionKey, Line[]>();
   let currentSection: SectionKey | null = null;
@@ -332,6 +369,7 @@ export function parseEdition(raw: string): RawEdition {
     date,
     masthead: h1Match[1]!.trim(),
     tldr: tldrLines.join(" ").trim(),
+    ...(cover ? { image: cover } : {}),
     stories,
     radar: parseRadar(sections.get("radar") ?? []),
     ...(slowFeed ? { slowFeed } : {}),

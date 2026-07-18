@@ -69,6 +69,8 @@ export interface RawEdition {
   masthead: string;
   /** Il blockquote di apertura, markdown inline */
   tldr: string;
+  /** Cover dell'edizione: immagine markdown tra TLDR e prima sezione */
+  image?: StoryImage;
   stories: Story[];
   radar: RadarItem[];
   slowFeed?: SlowFeed;
