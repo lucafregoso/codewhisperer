@@ -82,7 +82,11 @@ const imageAlt = image?.alt ?? story.title;
     font-family: var(--font-display);
     font-variation-settings: "wdth" var(--display-width);
     font-weight: var(--display-weight);
-    color: var(--signal);
+    /* Numerale "sdoppiato" da fuori registro di stampa: inchiostro
+       pieno (contrasto garantito) con ombra solida lime che spunta
+       di un paio di px. In em: scala col corpo del numero. */
+    color: var(--numeral-ink);
+    text-shadow: var(--numeral-shadow);
     line-height: 0.82;
     user-select: none;
   }
@@ -98,7 +102,7 @@ const imageAlt = image?.alt ?? story.title;
 
   .story-anchor:hover {
     text-decoration: underline;
-    text-decoration-color: var(--signal);
+    text-decoration-color: var(--signal-ink);
     text-decoration-thickness: var(--rule-weight);
   }
 
@@ -146,7 +150,7 @@ const imageAlt = image?.alt ?? story.title;
 
   .source-list :global(.source-badge:hover) {
     color: var(--ink);
-    border-bottom-color: var(--signal);
+    border-bottom-color: var(--signal-ink);
   }
 
   .source-list li:not(:last-child)::after {
