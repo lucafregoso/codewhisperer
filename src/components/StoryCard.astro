@@ -85,8 +85,8 @@ const imageAlt = image?.alt ?? story.title;
     /* Numerale "sdoppiato" da fuori registro di stampa: inchiostro
        pieno (contrasto garantito) con ombra solida lime che spunta
        di un paio di px. In em: scala col corpo del numero. */
-    color: var(--ink);
-    text-shadow: 0.07em 0.07em 0 var(--signal);
+    color: var(--numeral-ink);
+    text-shadow: var(--numeral-shadow);
     line-height: 0.82;
     user-select: none;
   }

@@ -26,6 +26,11 @@
   --signal-surface: #f6f8d0;
   --on-signal: #111111; /* testo sopra campiture lime (selection) */
 
+  /* Numerali di testata: in chiaro inchiostro con ombra "fuori
+     registro" lime; in scuro lime acceso pieno (l'ombra lì perde). */
+  --numeral-ink: var(--ink);
+  --numeral-shadow: 0.07em 0.07em 0 var(--signal);
+
   /* Accent ciclici per categorie emergenti (AA su paper e ink) */
   --accent-0: #b3261e;
   --accent-1: #1a56db;
@@ -64,19 +69,23 @@
 }
 
 :root[data-theme="dark"] {
-  --paper: #131313;
+  /* Un gradino sopra il nero pieno: meno pozzo, stessa notte. */
+  --paper: #1c1c1b;
   --ink: #f2f2ef;
   --ink-muted: #c2c2bd;
-  --ink-faint: #8f8f8a;
+  --ink-faint: #92928d;
   --rule: #f2f2ef;
-  --hairline: #3a3a3a;
-  --surface: #1d1d1c;
+  --hairline: #424240;
+  --surface: #2a2a28;
   --focus-ring: #7aa2ff;
 
   --signal: #d0db02;
   --signal-ink: #d0db02;
-  --signal-surface: #20240a;
+  --signal-surface: #262b0e;
   --on-signal: #111111;
+
+  --numeral-ink: var(--signal);
+  --numeral-shadow: none;
 
   --accent-0: #ff6f61;
   --accent-1: #7aa2ff;
