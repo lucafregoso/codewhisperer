@@ -52,7 +52,9 @@ const strings = t();
   }
 
   .radar-count {
-    color: var(--signal-ink);
+    /* Stesso "fuori registro" dei numerali di rango. */
+    color: var(--ink);
+    text-shadow: 0.07em 0.07em 0 var(--signal);
     font-size: var(--text-title);
   }
 
