@@ -76,7 +76,9 @@ const strings = t();
   }
 
   .stat:first-child dd {
-    color: var(--signal);
+    /* Stesso "fuori registro" dei numerali di rango. */
+    color: var(--numeral-ink);
+    text-shadow: var(--numeral-shadow);
   }
 
   .coverage-unreachable {

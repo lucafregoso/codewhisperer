@@ -60,15 +60,16 @@ video {
 
 ::selection {
   background: var(--signal);
-  color: var(--paper);
+  color: var(--on-signal);
 }
 
-/* I link nel corpo del contenuto portano la sottolineatura segnale. */
+/* I link nel corpo del contenuto portano la sottolineatura segnale
+   (variante ink: legata al testo, deve reggere il contrasto). */
 .story-body a,
 .radar-text a,
 .slow-body a,
 .edition-tldr a {
-  text-decoration-color: var(--signal);
+  text-decoration-color: var(--signal-ink);
   text-decoration-thickness: 2px;
 }
 

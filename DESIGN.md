@@ -14,16 +14,22 @@ verificati axe AA in CI.
 
 | Ruolo | Chiaro | Scuro | Uso |
 |---|---|---|---|
-| `--paper` | `#ffffff` | `#131313` | fondo pagina |
+| `--paper` | `#ffffff` | `#1c1c1b` | fondo pagina |
 | `--ink` | `#111111` | `#f2f2ef` | testo, regole |
-| `--ink-muted` / `--ink-faint` | `#444` / `#6f6f6f` | `#c2c2bd` / `#8f8f8a` | corpo secondario / meta |
-| `--signal` | `#c64400` (4.9:1) | `#ff8a4d` (8:1) | **l'unico accento di testata**: numerali, marker, hover, kicker podcast, conteggi |
-| `--signal-surface` | `#fbeadd` | `#281910` | banda Radar, hover righe indice |
-| `--surface` | `#f4f4f2` | `#1d1d1c` | colophon |
+| `--ink-muted` / `--ink-faint` | `#444` / `#6f6f6f` | `#c2c2bd` / `#92928d` | corpo secondario / meta |
+| `--signal` | `#d0db02` (lime di Luca, rgb 208·219·2) | `#d0db02` | **l'unico accento di testata**, SOLO strutturale in chiaro (1.5:1 su bianco, mai testo): barra nameplate, marker data, tinte, selection, ombra dei numerali |
+| `--signal-ink` | `#5b6300` (oliva, 6.5:1) | `#d0db02` (12:1) | il segnale COME TESTO: kicker, contatori, sottolineature, virgolette |
+| `--numeral-ink` + `--numeral-shadow` | ink + ombra lime 0.07em ("fuori registro") | lime pieno, senza ombra | numerali di rango, contatore Radar, ratio copertura |
+| `--on-signal` | `#111111` | `#111111` | testo sopra campiture lime (selection) |
+| `--signal-surface` | `#f6f8d0` | `#262b0e` | banda Radar, hover righe indice |
+| `--surface` | `#f4f4f2` | `#2a2a28` | colophon |
 | `--accent-0..5` | ciclici | ciclici | SOLO etichette categoria nelle pagine /categoria/ |
 
 Regole: il segnale è segnale, non decorazione (PRODUCT.md §2). Mai
-introdurre un secondo accento di testata. `::selection` in segnale.
+introdurre un secondo accento di testata. Il lime puro non fa mai da
+testo su fondo chiaro: lì parla l'oliva `--signal-ink`. I numerali
+sono "sdoppiati" da stampa fuori registro in chiaro, lime pieni in
+scuro. `::selection` lime con testo `--on-signal`.
 
 ## Typography
 

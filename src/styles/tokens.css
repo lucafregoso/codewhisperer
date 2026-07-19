@@ -15,11 +15,21 @@
   --surface: #f4f4f2;     /* bande tinte (colophon) */
   --focus-ring: #1a56db;
 
-  /* L'arancio segnale: l'UNICO accento di testata (PRODUCT.md,
-     "Il colore è segnale, non decorazione"). AA 4.9:1 su paper;
-     il surface è la tinta banda keyed sullo hue. */
-  --signal: #c64400;
-  --signal-surface: #fbeadd;
+  /* Il lime segnale rgb(208,219,2): l'UNICO accento di testata
+     (PRODUCT.md, "Il colore è segnale, non decorazione"), in due
+     ruoli — il lime puro è SOLO strutturale (barre, marker, banda:
+     su bianco fa 1.5:1, mai testo); --signal-ink è l'oliva derivato
+     per numerali/kicker/sottolineature (AA 6.5:1 su paper). Nel tema
+     scuro il lime regge anche come testo (12:1) e i ruoli convergono. */
+  --signal: #d0db02;
+  --signal-ink: #5b6300;
+  --signal-surface: #f6f8d0;
+  --on-signal: #111111; /* testo sopra campiture lime (selection) */
+
+  /* Numerali di testata: in chiaro inchiostro con ombra "fuori
+     registro" lime; in scuro lime acceso pieno (l'ombra lì perde). */
+  --numeral-ink: var(--ink);
+  --numeral-shadow: 0.07em 0.07em 0 var(--signal);
 
   /* Accent ciclici per categorie emergenti (AA su paper e ink) */
   --accent-0: #b3261e;
@@ -59,17 +69,23 @@
 }
 
 :root[data-theme="dark"] {
-  --paper: #131313;
+  /* Un gradino sopra il nero pieno: meno pozzo, stessa notte. */
+  --paper: #1c1c1b;
   --ink: #f2f2ef;
   --ink-muted: #c2c2bd;
-  --ink-faint: #8f8f8a;
+  --ink-faint: #92928d;
   --rule: #f2f2ef;
-  --hairline: #3a3a3a;
-  --surface: #1d1d1c;
+  --hairline: #424240;
+  --surface: #2a2a28;
   --focus-ring: #7aa2ff;
 
-  --signal: #ff8a4d;
-  --signal-surface: #281910;
+  --signal: #d0db02;
+  --signal-ink: #d0db02;
+  --signal-surface: #262b0e;
+  --on-signal: #111111;
+
+  --numeral-ink: var(--signal);
+  --numeral-shadow: none;
 
   --accent-0: #ff6f61;
   --accent-1: #7aa2ff;
