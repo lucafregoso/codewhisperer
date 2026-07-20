@@ -206,6 +206,9 @@ const imageAlt = image?.alt ?? story.title;
   }
 
   /* ── Ranghi 4+: riga d'indice da quotidiano ────────────────── */
+  /* Niente hover di riga: il contenitore non è un link (i link veri
+     — titolo e fonti — hanno i loro hover). Un fondo al passaggio
+     suggerirebbe un'affordance che non esiste. */
   .story--index {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -213,26 +216,11 @@ const imageAlt = image?.alt ?? story.title;
     align-items: start;
     padding-block: var(--space-2);
     border-top: 1px solid var(--hairline);
-    transition: background-color 160ms var(--ease-out);
   }
 
   /* La colonna thumbnail esiste solo quando l'immagine c'è. */
   .story--index:has(.story-thumb) {
     grid-template-columns: auto auto 1fr;
-  }
-
-  .story--index:hover {
-    background-color: var(--signal-surface);
-  }
-
-  /* In hover il fondo diventa signal-surface: il faint scala a muted
-     per restare AA (4.5:1 su testo piccolo). */
-  .story--index:hover .source-list :global(.source-badge) {
-    color: var(--ink-muted);
-  }
-
-  .story--index:hover .source-list li:not(:last-child)::after {
-    color: var(--ink-muted);
   }
 
   .story--index .story-no {

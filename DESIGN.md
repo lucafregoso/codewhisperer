@@ -21,7 +21,7 @@ verificati axe AA in CI.
 | `--signal-ink` | `#5b6300` (oliva, 6.5:1) | `#d0db02` (12:1) | il segnale COME TESTO: kicker, contatori, sottolineature, virgolette |
 | `--numeral-ink` + `--numeral-shadow` | ink + ombra lime 0.07em ("fuori registro") | lime pieno, senza ombra | numerali di rango, contatore Radar, ratio copertura |
 | `--on-signal` | `#111111` | `#111111` | testo sopra campiture lime (selection) |
-| `--signal-surface` | `#f6f8d0` | `#262b0e` | banda Radar, hover righe indice |
+| `--signal-surface` | `#f6f8d0` | `#262b0e` | banda Radar |
 | `--surface` | `#f4f4f2` | `#2a2a28` | colophon |
 | `--accent-0..5` | ciclici | ciclici | SOLO etichette categoria nelle pagine /categoria/ |
 
@@ -78,6 +78,7 @@ TermIndex · CorpusItemCard.
 ## Motion & interaction
 
 Il brand sceglie la sobrietà: nessuna entrance choreography. Hover
-con transizioni brevi (160ms, `--ease-out`), sottolineature segnale
-2px, fondo `--signal-surface` sulle righe indice. Kill-switch globale
-`prefers-reduced-motion`. Il contenuto non dipende mai da JS.
+SOLO su elementi cliccabili (sottolineature segnale 2px su link e
+titoli; mai fondi hover su contenitori non-link: l'affordance non si
+finge). Kill-switch globale `prefers-reduced-motion`. Il contenuto
+non dipende mai da JS.
