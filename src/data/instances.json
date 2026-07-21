@@ -11,6 +11,17 @@
         "description": "CodeWhisperer impagina ogni giorno la rassegna tech di Hermes: le storie in primo piano, il radar e il feed lento, con filtri per fonte e categoria.",
         "themeColor": "#111111"
       }
+    },
+    {
+      "slug": "salesai",
+      "contentDir": "input/salesai-daily",
+      "basePath": "/codewhisperer/salesai/",
+      "branding": {
+        "name": "SalesRadar",
+        "tagline": "Il radar commerciale di Codemotion.",
+        "description": "SalesRadar impagina ogni giorno i segnali di mercato per il team sales: aziende che investono in AI, budget e funding, scadenze regolatorie e mosse dell'ecosistema.",
+        "themeColor": "#111111"
+      }
     }
   ]
 }
