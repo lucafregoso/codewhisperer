@@ -1,0 +1,16 @@
+{
+  "default": "rassegnai",
+  "instances": [
+    {
+      "slug": "rassegnai",
+      "contentDir": "input/rassegnai-daily",
+      "basePath": "/codewhisperer/",
+      "branding": {
+        "name": "CodeWhisperer",
+        "tagline": "La rassegna tech quotidiana, impaginata.",
+        "description": "CodeWhisperer impagina ogni giorno la rassegna tech di Hermes: le storie in primo piano, il radar e il feed lento, con filtri per fonte e categoria.",
+        "themeColor": "#111111"
+      }
+    }
+  ]
+}
