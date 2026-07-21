@@ -13,13 +13,13 @@
       }
     },
     {
-      "slug": "salesai",
-      "contentDir": "input/salesai-daily",
-      "basePath": "/codewhisperer/salesai/",
+      "slug": "sailes",
+      "contentDir": "input/sailes-daily",
+      "basePath": "/codewhisperer/sailes/",
       "branding": {
-        "name": "SalesRadar",
+        "name": "sAIles",
         "tagline": "Il radar commerciale di Codemotion.",
-        "description": "SalesRadar impagina ogni giorno i segnali di mercato per il team sales: aziende che investono in AI, budget e funding, scadenze regolatorie e mosse dell'ecosistema.",
+        "description": "sAIles impagina ogni giorno i segnali di mercato per il team sales: aziende che investono in AI, budget e funding, scadenze regolatorie e mosse dell'ecosistema.",
         "themeColor": "#111111"
       }
     }
