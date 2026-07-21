@@ -12,7 +12,9 @@
  * L'istanza storica `rassegnai` codifica l'eccezione root nel proprio
  * `basePath`: nessun caso speciale nel codice.
  */
-import registry from "../data/instances.json";
+// L'attributo `with` è obbligatorio per i consumer Node puri (i test
+// Playwright caricano questo modulo fuori da Vite, via type stripping).
+import registry from "../data/instances.json" with { type: "json" };
 
 export interface InstanceBranding {
   name: string;

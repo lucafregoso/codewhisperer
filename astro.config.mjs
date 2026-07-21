@@ -5,7 +5,7 @@ import contentAssets from './src/integrations/content-assets.mjs';
 // Import TS da .mjs: regge perché astro.config viene bundlato (vedi
 // la stessa nota in src/integrations/content-assets.mjs).
 import { resolveInstance } from './src/lib/instance.ts';
-import instancesRegistry from './src/data/instances.json';
+import instancesRegistry from './src/data/instances.json' with { type: 'json' };
 
 // Public deployment configuration comes from an untracked .env.local or from
 // GitHub Actions repository variables. Playwright forces a local, base-less
