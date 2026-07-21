@@ -42,8 +42,10 @@ jobs:
           ref: master
           submodules: true
 
+      # Pathspec input/: solo i submodule di contenuto (<slug>-daily), mai
+      # eventuali submodule futuri di altra natura.
       - name: Update submodules to latest remote
-        run: git submodule update --remote
+        run: git submodule update --remote -- input/
 
       - name: Detect changes
         id: diff

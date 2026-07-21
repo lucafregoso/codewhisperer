@@ -110,7 +110,11 @@ jobs:
               echo "istanza ${SLUG}: index.html contiene URL della build di test" >&2
               exit 1
             fi
-            if ls "$CONTENT_DIR"/editions/*.md > /dev/null 2>&1; then
+            HAS_CORPUS=0
+            ls "$CONTENT_DIR"/editions/*.md > /dev/null 2>&1 && HAS_CORPUS=1
+            # la lane manuale input/*.md appartiene alla sola istanza default
+            [ "$IS_DEFAULT" = "1" ] && ls input/*.md > /dev/null 2>&1 && HAS_CORPUS=1
+            if [ "$HAS_CORPUS" = "1" ]; then
               if grep -q "data-empty-edition" "$INDEX"; then
                 echo "istanza ${SLUG}: corpus presente ma homepage vuota" >&2
                 exit 1

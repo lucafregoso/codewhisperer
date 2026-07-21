@@ -182,6 +182,11 @@ codewhisperer. Senza notifica resta il cron.)
 3. merge → il deploy pubblica `/codewhisperer/<slug>/` ("in edicola
    presto" finché non arriva il primo drop).
 
+Vincolo sullo slug: non può collidere con le route dell'istanza root
+(`edizioni`, `categoria`, `fonte`, `cerca`, `pagefind`, `images`,
+`_astro`, `rss.xml`) — la sottocartella `_site/<slug>/` convive nello
+stesso artifact della root.
+
 ## La lane rassegnai-daily (sorgente canonica)
 
 È il caso `<slug>=rassegnai` del contratto qui sopra (con l'eccezione
