@@ -1,13 +1,14 @@
-name: Sync rassegnai-daily
+name: Sync content submodules
 
-# Le edizioni nascono in un altro ambiente e vengono pushate su
-# lucafregoso/rassegnai-daily: questo workflow aggiorna il pointer del
-# submodule e, se è cambiato, committa su master e fa partire il
-# deploy. Tre trigger:
+# Le edizioni nascono in un altro ambiente e vengono pushate sui repo
+# <slug>-daily: questo workflow aggiorna i pointer di TUTTI i
+# submodule (per contratto solo input/*-daily) e, se qualcosa è
+# cambiato, committa su master e fa partire il deploy. Tre trigger:
 # - cron: rete di sicurezza, controlla ogni 30 minuti;
 # - repository_dispatch (content-update): per l'aggiornamento
-#   istantaneo, rassegnai-daily può notificare con un piccolo workflow
-#   (curl all'API dispatches con un PAT: vedi docs/INGESTION.md);
+#   istantaneo, ogni repo <slug>-daily può notificare con un piccolo
+#   workflow (curl all'API dispatches con un PAT: vedi
+#   docs/INGESTION.md);
 # - manuale.
 #
 # Il push fatto col GITHUB_TOKEN non scatena altri workflow (regola
@@ -41,27 +42,33 @@ jobs:
           ref: master
           submodules: true
 
-      - name: Update submodule to latest remote
-        run: git submodule update --remote input/rassegnai-daily
+      - name: Update submodules to latest remote
+        run: git submodule update --remote
 
       - name: Detect changes
         id: diff
         run: |
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "Nessun aggiornamento in rassegnai-daily."
+            echo "Nessun aggiornamento nei submodule di contenuto."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      # Il messaggio elenca i submodule cambiati col loro sha:
+      # "content: sync rassegnai-daily@abc1234 altro-daily@def5678".
       - name: Commit and push content update
         if: steps.diff.outputs.changed == 'true'
         run: |
-          SHA=$(git -C input/rassegnai-daily rev-parse --short HEAD)
+          MSG="content: sync"
+          for path in $(git diff --name-only); do
+            SHA=$(git -C "$path" rev-parse --short HEAD)
+            MSG="$MSG $(basename "$path")@${SHA}"
+          done
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add input/rassegnai-daily
-          git commit -m "content: sync rassegnai-daily @${SHA}"
+          git add -u
+          git commit -m "$MSG"
           git push origin master
 
       # Il push sopra non genera eventi (GITHUB_TOKEN): il deploy — che
