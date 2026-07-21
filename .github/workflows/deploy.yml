@@ -23,16 +23,15 @@ jobs:
     timeout-minutes: 15
     env:
       SITE_URL: ${{ vars.SITE_URL || 'https://lucafregoso.github.io' }}
-      BASE_PATH: ${{ vars.BASE_PATH || '/codewhisperer/' }}
 
     steps:
-      # Il contenuto vive nel submodule pubblico rassegnai-daily.
+      # Il contenuto vive nei submodule pubblici input/*-daily.
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           submodules: true
 
-      - name: Fetch LFS content (submodule)
+      - name: Fetch LFS content (submodules)
         run: git submodule foreach --recursive git lfs pull
 
       - name: Set up pnpm
@@ -61,28 +60,69 @@ jobs:
       # I drop di contenuto vanno dritti su master (costituzione §10):
       # anche il deploy esegue l'e2e completo — il sito non regredisce mai.
       # ATTENZIONE all'ordine: l'e2e ricostruisce dist/ con la build di test
-      # (base "/", site 127.0.0.1:4399). La build di produzione DEVE venire
+      # (base "/", site 127.0.0.1:4399). Le build di produzione DEVONO venire
       # dopo, o su Pages finisce l'artifact sbagliato (successo il 17 luglio
-      # 2026: CSS 404 e canonical su localhost in produzione).
+      # 2026: CSS 404 e canonical su localhost in produzione). L'e2e gira una
+      # volta, sull'istanza di default: la verifica multi-istanza è dei check
+      # di build qui sotto.
       - name: Run end-to-end tests
         run: pnpm test
 
-      - name: Build production site
-        run: pnpm run build
-
-      - name: Verify dist is the production build
+      # La lista delle istanze viene dal registry (spec 014): una riga per
+      # istanza — slug, basePath, contentDir, flag default — condivisa dagli
+      # step di build e verifica.
+      - name: List instances from registry
         run: |
-          grep -q "href=\"${BASE_PATH%/}/_astro" dist/index.html
-          if grep -rq "127.0.0.1:4399" dist/index.html; then
-            echo "dist/ contiene URL della build di test" >&2
-            exit 1
-          fi
+          node -e '
+            const r = require("./src/data/instances.json");
+            for (const i of r.instances) {
+              console.log([i.slug, i.basePath, i.contentDir, i.slug === r.default ? 1 : 0].join(" "));
+            }
+          ' > instances.list
+          cat instances.list
+
+      # Una build Astro completa per istanza (sitemap, RSS, Pagefind propri),
+      # fuse in _site/: l'istanza default alla root, le altre in <slug>/.
+      - name: Build production site (all instances)
+        run: |
+          mkdir -p _site
+          while read -r SLUG BASE CONTENT_DIR IS_DEFAULT; do
+            echo "::group::Build istanza ${SLUG} (base ${BASE})"
+            INSTANCE="$SLUG" BASE_PATH="$BASE" pnpm run build < /dev/null
+            if [ "$IS_DEFAULT" = "1" ]; then DEST="_site"; else DEST="_site/$SLUG"; fi
+            mkdir -p "$DEST"
+            cp -R dist/. "$DEST"/
+            echo "::endgroup::"
+          done < instances.list
+
+      # Per OGNI istanza: index.html referenzia asset sotto il SUO base path,
+      # niente URL della build di test e — se il corpus dell'istanza ha
+      # edizioni — la homepage NON è lo stato vuoto (guardia anti-deploy-vuoto:
+      # il marker data-empty-edition con un corpus presente significa checkout
+      # o loader rotti).
+      - name: Verify merged artifact per instance
+        run: |
+          while read -r SLUG BASE CONTENT_DIR IS_DEFAULT; do
+            if [ "$IS_DEFAULT" = "1" ]; then DIR="_site"; else DIR="_site/$SLUG"; fi
+            INDEX="$DIR/index.html"
+            grep -q "href=\"${BASE%/}/_astro" "$INDEX"
+            if grep -q "127.0.0.1:4399" "$INDEX"; then
+              echo "istanza ${SLUG}: index.html contiene URL della build di test" >&2
+              exit 1
+            fi
+            if ls "$CONTENT_DIR"/editions/*.md > /dev/null 2>&1; then
+              if grep -q "data-empty-edition" "$INDEX"; then
+                echo "istanza ${SLUG}: corpus presente ma homepage vuota" >&2
+                exit 1
+              fi
+            fi
+          done < instances.list
 
       - name: Upload GitHub Pages artifact
         if: github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v5
         with:
-          path: dist
+          path: _site
 
   deploy:
     name: Deploy
