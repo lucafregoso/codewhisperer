@@ -2,7 +2,8 @@
 
 Questo documento è il contratto tra Hermes (l'agente che scrive le
 rassegne) e CodeWhisperer (l'impaginatore Astro). È l'unico documento da
-dare in pasto a Hermes.
+dare in pasto a Hermes — a ogni suo profilo: il formato è identico per
+tutte le istanze (v. "Profili e istanze").
 
 ## Dove
 
@@ -124,25 +125,35 @@ Sul sito: cover in testa all'edizione; hero = immagine sotto il
 titolo; lead = sopra il titolo; indice = thumbnail 4:3. Lazy sotto il
 fold.
 
-## La lane rassegnai-daily (sorgente canonica)
+## Profili e istanze (EdicolAI)
 
-Le edizioni prodotte nell'ambiente esterno vengono pushate su
-`github.com/lucafregoso/rassegnai-daily` (privato, Git LFS per
-jpg/mp3), montato qui come **submodule** in `input/rassegnai-daily`:
+**EdicolAI** (control plane esterno) gestisce N profili Hermes; ogni
+profilo alimenta un proprio magazine su questo stesso sito. Il
+contratto è uno slug end-to-end:
 
 ```
-editions/YYYY-MM-DD.md        # la rassegna (formato di questo file)
-editions/images/*.jpg         # cover e immagini storia (LFS)
-editions/podcast/YYYY-MM-DD.mp3  # audio (LFS, basename = edizione)
+profilo Hermes <slug> → repo <slug>-daily → submodule input/<slug>-daily
+                      → magazine su /codewhisperer/<slug>/
 ```
 
-Il workflow `content-sync` di questo repo controlla il subrepo ogni
-30 minuti (e a comando): se ci sono commit nuovi aggiorna il pointer,
-committa su master e fa partire il deploy. Per l'aggiornamento
-**istantaneo**, aggiungere in rassegnai-daily un workflow di notifica:
+Eccezione dichiarata: l'istanza storica `rassegnai` resta alla root
+`/codewhisperer/` — nessun link, RSS o URL indicizzato si rompe.
+
+Il formato markdown di questo contratto è **identico per ogni
+profilo**: cambia solo il repo di destinazione. Un profilo nuovo non
+impara niente di nuovo — pusha le edizioni nel proprio `<slug>-daily`
+con lo stesso layout `editions/` della lane rassegnai-daily (sotto).
+
+### Notifica istantanea (per ogni repo `<slug>-daily`)
+
+Il workflow `content-sync` di questo repo controlla TUTTI i submodule
+`input/*-daily` ogni 30 minuti (e a comando): se ci sono commit nuovi
+aggiorna i pointer, committa su master e fa partire il deploy. Per
+l'aggiornamento **istantaneo**, ogni `<slug>-daily` replica lo stesso
+workflow di notifica (cambia solo il repo che lo ospita):
 
 ```yaml
-# .github/workflows/notify.yml (in rassegnai-daily)
+# .github/workflows/notify.yml (in <slug>-daily)
 on: { push: { branches: [main] } }
 jobs:
   notify:
@@ -159,9 +170,44 @@ jobs:
 (`CODEWHISPERER_PAT`: fine-grained PAT con contents:read+write su
 codewhisperer. Senza notifica resta il cron.)
 
+### Onboarding di una nuova istanza (runbook)
+
+1. EdicolAI crea il profilo `<slug>` e il repo `<slug>-daily`
+   (pubblico, Git LFS per jpg/mp3, workflow di notifica qui sopra);
+2. in codewhisperer:
+   `git submodule add https://github.com/…/<slug>-daily input/<slug>-daily`
+   + entry nel registry `src/data/instances.json` (branding incluso)
+   + eventuale `src/data/aliases/<slug>.ts` (opzionale, si parte con
+   il set vuoto: la tassonomia è emergente);
+3. merge → il deploy pubblica `/codewhisperer/<slug>/` ("in edicola
+   presto" finché non arriva il primo drop).
+
+Vincolo sullo slug: non può collidere con le route dell'istanza root
+(`edizioni`, `categoria`, `fonte`, `cerca`, `pagefind`, `images`,
+`_astro`, `rss.xml`) — la sottocartella `_site/<slug>/` convive nello
+stesso artifact della root.
+
+## La lane rassegnai-daily (sorgente canonica)
+
+È il caso `<slug>=rassegnai` del contratto qui sopra (con l'eccezione
+root): le edizioni prodotte nell'ambiente esterno vengono pushate su
+`github.com/lucafregoso/rassegnai-daily` (privato, Git LFS per
+jpg/mp3), montato qui come **submodule** in `input/rassegnai-daily`:
+
+```
+editions/YYYY-MM-DD.md        # la rassegna (formato di questo file)
+editions/images/*.jpg         # cover e immagini storia (LFS)
+editions/podcast/YYYY-MM-DD.mp3  # audio (LFS, basename = edizione)
+```
+
+Sync e notifica istantanea: vedi "Profili e istanze" — rassegnai-daily
+usa lo stesso workflow di notifica di ogni altro `<slug>-daily`.
+
 **Attenzione alle date**: una data presente in entrambe le lane
 (`input/*.md` e `editions/*.md`) fa fallire la build — la lane
-manuale serve solo per drop d'emergenza di date non coperte.
+manuale serve solo per drop d'emergenza di date non coperte e
+appartiene alla SOLA istanza default (`rassegnai`): ogni altra
+istanza legge esclusivamente il proprio `input/<slug>-daily/editions/`.
 
 ## Come pubblicare a mano (lane di emergenza)
 
