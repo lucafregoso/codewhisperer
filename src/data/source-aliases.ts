@@ -1,26 +1,22 @@
 /**
- * Fonti e categorie sono EMERGENTI (costituzione §2): questo file contiene
- * solo le normalizzazioni minime — gli aggregatori del pattern "via" e gli
- * alias per grafie doppie della stessa testata.
+ * Selettore degli alias fonte per istanza (spec 014): riespone il
+ * modulo curato dell'istanza attiva da `src/data/aliases/<slug>.ts`,
+ * con fallback ai set vuoti di `aliases/default.ts` per le istanze
+ * senza file curato. Export names invariati: il consumer
+ * (`src/lib/parser/sources.ts`) non cambia import.
+ *
+ * Per curare gli alias di una nuova istanza: creare
+ * `src/data/aliases/<slug>.ts` (stessa shape) e aggiungerlo alla
+ * mappa qui sotto.
  */
+import { activeInstance } from "../lib/instance";
+import * as fallback from "./aliases/default";
+import * as rassegnai from "./aliases/rassegnai";
 
-/** Slug degli aggregatori: nel pattern "A (B)" l'aggregatore è sempre `via`. */
-export const AGGREGATOR_SLUGS = new Set([
-  "techmeme",
-  "hacker-news",
-  "lobste-rs",
-]);
+const curated: Record<string, typeof fallback> = { rassegnai };
 
-/** Host → slug aggregatore, per riconoscere il target reale del link. */
-export const AGGREGATOR_HOSTS: Record<string, string> = {
-  "www.techmeme.com": "techmeme",
-  "techmeme.com": "techmeme",
-  "news.ycombinator.com": "hacker-news",
-  "lobste.rs": "lobste-rs",
-};
+const selected = curated[activeInstance().slug] ?? fallback;
 
-/** Alias label → slug canonico, solo per grafie doppie osservate. */
-export const SOURCE_ALIASES: Record<string, string> = {
-  "lobste.rs": "lobste-rs",
-  "hacker news": "hacker-news",
-};
+export const AGGREGATOR_SLUGS = selected.AGGREGATOR_SLUGS;
+export const AGGREGATOR_HOSTS = selected.AGGREGATOR_HOSTS;
+export const SOURCE_ALIASES = selected.SOURCE_ALIASES;
