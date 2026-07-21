@@ -79,6 +79,13 @@ const it = {
     previousPage: "Pagina precedente",
     nextPage: "Pagina successiva",
   },
+  empty: {
+    title: "In edicola presto",
+    message:
+      "La prima edizione non è ancora arrivata: appena Hermes consegna " +
+      "la sua rassegna, la trovi qui impaginata.",
+    archiveLink: "Sfoglia l'archivio delle edizioni",
+  },
   search: {
     noscript:
       "La ricerca richiede JavaScript. In alternativa, sfoglia per data, " +

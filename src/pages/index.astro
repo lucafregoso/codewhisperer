@@ -1,27 +1,80 @@
 ---
 import EditionLayout from "../components/EditionLayout.astro";
+import MastHead from "../components/MastHead.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { site } from "../data/site";
 import { t } from "../i18n";
 import { formatFullDate } from "../lib/dates";
 import { getEditionsSorted } from "../lib/editions";
 import { editionStructuredData } from "../lib/structured-data";
+import { withBase } from "../lib/url";
 
 const strings = t();
 const editions = await getEditionsSorted();
+// Corpus vuoto (spec 014): un'istanza nasce PRIMA del primo drop del
+// suo profilo, quindi niente throw — stato "in edicola presto" con il
+// marker data-empty-edition. La guardia anti-deploy-vuoto (corpus
+// presente ma homepage vuota) vive nel check per-istanza di deploy.yml.
 const edition = editions[0];
-if (!edition) {
-  throw new Error("Nessuna edizione in input/: impossibile costruire il sito");
-}
 const prev = editions[1];
-const title = strings.edition.editionOf(formatFullDate(edition.data.date));
+const title = edition
+  ? strings.edition.editionOf(formatFullDate(edition.data.date))
+  : strings.empty.title;
 ---
 
 <BaseLayout
   title={title}
   description={site.meta.description}
   canonicalPath="/"
-  structuredData={editionStructuredData(edition, Astro.site)}
+  structuredData={edition ? editionStructuredData(edition, Astro.site) : []}
 >
-  <EditionLayout edition={edition} prev={prev} />
+  {
+    edition ? (
+      <EditionLayout edition={edition} prev={prev} />
+    ) : (
+      <>
+        <MastHead />
+        <main id="main">
+          <section class="empty-edition shell" data-empty-edition>
+            <p class="kicker empty-kicker">{site.tagline}</p>
+            <h1 class="empty-title">{strings.empty.title}</h1>
+            <hr class="section-rule" aria-hidden="true" />
+            <p class="empty-message">{strings.empty.message}</p>
+            <p class="empty-archive">
+              <a href={withBase("/edizioni/")}>{strings.empty.archiveLink}</a>
+            </p>
+          </section>
+        </main>
+      </>
+    )
+  }
 </BaseLayout>
+
+<style>
+  .empty-edition {
+    padding-block: var(--space-4);
+  }
+
+  .empty-kicker {
+    color: var(--signal-ink);
+    margin-bottom: var(--space-1);
+  }
+
+  .empty-title {
+    font-size: var(--text-hero);
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  .empty-message {
+    color: var(--ink-muted);
+    font-size: var(--text-deck);
+    max-width: var(--measure);
+    margin-block: var(--space-3) var(--space-2);
+  }
+
+  .empty-archive {
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+</style>
