@@ -11,7 +11,7 @@
 export const FIXTURE_INSTANCE_DEFAULT = {
   slug: "gazzetta",
   contentDir: "input/gazzetta-daily",
-  basePath: "/codewhisperer/",
+  basePath: "/",
   branding: {
     name: "Gazzetta Fixture",
     tagline: "Tagline di prova.",
@@ -23,7 +23,7 @@ export const FIXTURE_INSTANCE_DEFAULT = {
 export const FIXTURE_INSTANCE_SECONDARY = {
   slug: "bollettino",
   contentDir: "input/bollettino-daily",
-  basePath: "/codewhisperer/bollettino/",
+  basePath: "/bollettino/",
   branding: {
     name: "Bollettino Fixture",
     tagline: "Tagline secondaria di prova.",

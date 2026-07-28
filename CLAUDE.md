@@ -25,7 +25,7 @@ pnpm gate         # check + test:unit + build + test — IL gate pre-merge
 
 - **Multi-istanza (EdicolAI)**: un magazine per profilo Hermes, registry
   `src/data/instances.json`, selezione via env `INSTANCE` (default
-  `rassegnai`, servita alla root; le altre su `/codewhisperer/<slug>/`).
+  `rassegnai`, servita alla root; le altre su `/<slug>/`).
   Un **submodule** `input/<slug>-daily` per istanza (Git LFS per
   jpg/mp3): `editions/*.md` + `images/` + `podcast/`. La lane manuale
   `input/*.md` resta per emergenze della SOLA istanza default (date

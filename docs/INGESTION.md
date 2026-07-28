@@ -133,11 +133,11 @@ contratto è uno slug end-to-end:
 
 ```
 profilo Hermes <slug> → repo <slug>-daily → submodule input/<slug>-daily
-                      → magazine su /codewhisperer/<slug>/
+                      → magazine su /<slug>/
 ```
 
 Eccezione dichiarata: l'istanza storica `rassegnai` resta alla root
-`/codewhisperer/` — nessun link, RSS o URL indicizzato si rompe.
+`/` — nessun link, RSS o URL indicizzato si rompe.
 
 Il formato markdown di questo contratto è **identico per ogni
 profilo**: cambia solo il repo di destinazione. Un profilo nuovo non
@@ -179,7 +179,7 @@ codewhisperer. Senza notifica resta il cron.)
    + entry nel registry `src/data/instances.json` (branding incluso)
    + eventuale `src/data/aliases/<slug>.ts` (opzionale, si parte con
    il set vuoto: la tassonomia è emergente);
-3. merge → il deploy pubblica `/codewhisperer/<slug>/` ("in edicola
+3. merge → il deploy pubblica `/<slug>/` ("in edicola
    presto" finché non arriva il primo drop).
 
 Vincolo sullo slug: non può collidere con le route dell'istanza root

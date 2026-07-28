@@ -4,7 +4,7 @@
     {
       "slug": "rassegnai",
       "contentDir": "input/rassegnai-daily",
-      "basePath": "/codewhisperer/",
+      "basePath": "/",
       "branding": {
         "name": "CodeWhisperer",
         "tagline": "La rassegna tech quotidiana, impaginata.",
@@ -15,7 +15,7 @@
     {
       "slug": "sailes",
       "contentDir": "input/sailes-daily",
-      "basePath": "/codewhisperer/sailes/",
+      "basePath": "/sailes/",
       "branding": {
         "name": "sAIles",
         "tagline": "Il radar commerciale di Codemotion.",

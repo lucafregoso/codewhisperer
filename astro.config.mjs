@@ -21,7 +21,7 @@ const instance = resolveInstance(env.INSTANCE, instancesRegistry);
 export default defineConfig({
   site: isPlaywright
     ? 'http://127.0.0.1:4399'
-    : env.SITE_URL || 'https://lucafregoso.github.io',
+    : env.SITE_URL || 'https://codewhisperer.tech',
   // Keep base directory-like to avoid slash/no-slash sitemap duplicates.
   base: isPlaywright
     ? '/'

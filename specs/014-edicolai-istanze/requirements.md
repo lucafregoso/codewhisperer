@@ -10,11 +10,11 @@ solo repo Astro. Contratto slug end-to-end:
 
 ```
 profilo Hermes <slug> → repo <slug>-daily → submodule input/<slug>-daily
-                      → magazine su /codewhisperer/<slug>/
+                      → magazine su /<slug>/
 ```
 
 Eccezione dichiarata: l'istanza storica `rassegnai` resta alla root
-`/codewhisperer/` — nessun link, RSS o URL indicizzato si rompe.
+`/` — nessun link, RSS o URL indicizzato si rompe.
 
 ## User story
 
@@ -83,7 +83,7 @@ o step di verifica nella build CI (multi-istanza).
      contiene `127.0.0.1:4399` e — se il corpus dell'istanza ha
      edizioni — non contiene il marker di stato vuoto.
    - Dato ogni build autonoma (site+base propri), Quando apro
-     `/codewhisperer/<slug>/rss.xml` e la pagina cerca (Pagefind),
+     `/<slug>/rss.xml` e la pagina cerca (Pagefind),
      Allora funzionano per istanza senza collisioni con la root.
 
 6. **Sync contenuti**

@@ -8,7 +8,7 @@
  *
  * Contratto slug (docs/INGESTION.md):
  *   profilo Hermes <slug> → repo <slug>-daily → submodule
- *   input/<slug>-daily → magazine su /codewhisperer/<slug>/
+ *   input/<slug>-daily → magazine su /<slug>/
  * L'istanza storica `rassegnai` codifica l'eccezione root nel proprio
  * `basePath`: nessun caso speciale nel codice.
  */

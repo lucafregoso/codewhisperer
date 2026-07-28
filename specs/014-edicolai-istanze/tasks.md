@@ -5,7 +5,7 @@ le fondamenta, T4–T6 i derivati, T7–T8 la CI, poi docs/test/review.
 
 - [ ] T1 (astro-engineer) `src/data/instances.json`: registry con la
       sola istanza `rassegnai` (branding = attuale `site.ts`,
-      basePath `/codewhisperer/`) + `src/lib/instance.ts` con
+      basePath `/`) + `src/lib/instance.ts` con
       `activeInstance()` (env `INSTANCE`, default dal registry, slug
       sconosciuto = errore con elenco slug validi)
 - [ ] T2 (astro-engineer) `src/lib/content-dirs.ts` derivato
@@ -44,7 +44,7 @@ le fondamenta, T4–T6 i derivati, T7–T8 la CI, poi docs/test/review.
 - [ ] T10 (test-engineer) `pnpm gate` verde SENZA env INSTANCE e con
       output identico all'attuale (diff spot su dist: base path,
       home, rss, pagefind presenti); smoke build locale
-      `INSTANCE=rassegnai BASE_PATH=/codewhisperer/` = stessa dist
+      `INSTANCE=rassegnai BASE_PATH=/` = stessa dist
 - [ ] T11 (reviewer) review costituzione (§2 §3 §5 §6 §8) + decisioni
       del Gate HITL rispettate; poi merge develop → master, deploy e
       verifica live della root (nessuna regressione URL/RSS/SEO)

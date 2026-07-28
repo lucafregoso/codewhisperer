@@ -57,7 +57,7 @@ scripts/publish-edition.sh /percorso/rassegna.md --dry-run  # solo validazione
 2. **Pages**: Settings → Pages → Source: *GitHub Actions*.
 3. **Variabili** (Settings → Actions → Variables): `SITE_URL`
    (es. `https://USERNAME.github.io`) e `BASE_PATH`
-   (es. `/codewhisperer/`; con custom domain: `/`).
+   (es. `/`; con custom domain: `/`).
 4. **Deploy key per Hermes** (VPS): generare una chiave
    (`ssh-keygen -t ed25519 -f hermes_deploy`), aggiungerla in Settings →
    Deploy keys con *write access*, e configurarla nell'ssh-config del VPS.

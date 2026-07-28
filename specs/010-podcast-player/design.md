@@ -31,7 +31,7 @@ Gli mp3 vivono fuori da `public/`, serve un ponte:
   Playwright esercita lo stesso percorso del deploy.
 
 L'URL pubblico è `withBase('/podcast/<file>')` — su Pages diventa
-`/codewhisperer/podcast/<file>`, in test `/podcast/<file>`.
+`/podcast/<file>`, in test `/podcast/<file>`.
 
 ### 3. UI — `src/components/PodcastPlayer.astro`
 
