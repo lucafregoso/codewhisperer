@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SITE_URL: ${{ vars.SITE_URL || 'https://lucafregoso.github.io' }}
+      SITE_URL: ${{ vars.SITE_URL || 'https://codewhisperer.tech' }}
 
     steps:
       # Il contenuto vive nei submodule pubblici input/*-daily.

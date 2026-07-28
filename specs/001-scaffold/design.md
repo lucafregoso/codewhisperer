@@ -25,7 +25,7 @@ Playwright (webServer proprio su 4399), Fontsource variable self-hosted.
 ## File
 
 - `astro.config.mjs` — pattern SITE_URL/BASE_PATH/PLAYWRIGHT_TEST del
-  riferimento; base default `/codewhisperer/`.
+  riferimento; base default `/`.
 - `src/lib/url.ts` — `withBase()`.
 - `src/i18n/index.ts` — `activeLocales = ["it"]`, stringhe UI.
 - `src/data/site.ts` — identità (nome, tagline, descrizione meta).

@@ -90,7 +90,7 @@ describe("registry — src/data/instances.json", () => {
     );
     expect(rassegnai).toBeDefined();
     expect(rassegnai.contentDir).toBe("input/rassegnai-daily");
-    expect(rassegnai.basePath).toBe("/codewhisperer/");
+    expect(rassegnai.basePath).toBe("/");
     // Il branding è la fonte da cui T3 deriva src/data/site.ts: deve
     // coincidere con l'identità attuale (regression guard, criterio 2).
     expect(rassegnai.branding.name).toBe("CodeWhisperer");
@@ -122,7 +122,7 @@ describe("resolveInstance — resolver puro su registry fixture", () => {
     const mod: any = await import("../../src/lib/instance");
     const inst = mod.resolveInstance("bollettino", FIXTURE_REGISTRY);
     expect(inst).toEqual(FIXTURE_INSTANCE_SECONDARY);
-    expect(inst.basePath).toBe("/codewhisperer/bollettino/");
+    expect(inst.basePath).toBe("/bollettino/");
   });
 
   it("slug sconosciuto → errore che elenca TUTTI gli slug validi", async () => {
@@ -142,7 +142,7 @@ describe("activeInstance — registry vero via env INSTANCE", () => {
     expect(error, error?.message).toBeUndefined();
     expect(instance.slug).toBe("rassegnai");
     expect(instance.contentDir).toBe("input/rassegnai-daily");
-    expect(instance.basePath).toBe("/codewhisperer/");
+    expect(instance.basePath).toBe("/");
   });
 
   it("INSTANCE=rassegnai ritorna l'istanza esplicita", async () => {

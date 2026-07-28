@@ -21,7 +21,7 @@ export const GET: APIRoute = async (context) => {
   return rss({
     title: site.name,
     description: site.meta.description,
-    site: context.site ?? "https://lucafregoso.github.io",
+    site: context.site ?? "https://codewhisperer.tech",
     items,
     customData: `<language>${site.meta.lang}</language>`,
   });

@@ -34,7 +34,7 @@ di deploy (jq/node) senza transpile:
     {
       "slug": "rassegnai",
       "contentDir": "input/rassegnai-daily",
-      "basePath": "/codewhisperer/",
+      "basePath": "/",
       "branding": {
         "name": "CodeWhisperer",
         "tagline": "La rassegna tech quotidiana, impaginata.",
@@ -47,7 +47,7 @@ di deploy (jq/node) senza transpile:
 ```
 
 Regola per le nuove istanze: `contentDir = input/<slug>-daily`,
-`basePath = /codewhisperer/<slug>/`. `rassegnai` codifica l'eccezione
+`basePath = /<slug>/`. `rassegnai` codifica l'eccezione
 root nel proprio `basePath`: nessun caso speciale nel codice.
 
 ## Selezione — `src/lib/instance.ts` (nuovo)
@@ -156,7 +156,7 @@ paragrafo contenuto/struttura aggiornato (registry, `INSTANCE`).
 2. qui: `git submodule add https://…/<slug>-daily input/<slug>-daily`
    + entry nel registry (branding incluso) + eventuale
    `src/data/aliases/<slug>.ts` (opzionale, default vuoto);
-3. merge → il deploy pubblica `/codewhisperer/<slug>/` (vuota "in
+3. merge → il deploy pubblica `/<slug>/` (vuota "in
    edicola presto" finché non arriva il primo drop).
 
 ## Test
