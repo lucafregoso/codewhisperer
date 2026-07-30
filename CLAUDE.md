@@ -62,11 +62,15 @@ pnpm gate         # check + test:unit + build + test — IL gate pre-merge
 
 ## Git flow
 
-- `master` = live (il deploy parte da qui), `develop` = integrazione,
-  `feature/NNN-slug` per ogni spec.
-- Contenuto (nuove edizioni in `input/`): commit diretto su `master`
-  (`content: edizione YYYY-MM-DD`) — la CI valida, il deploy segue.
-- Codice: feature branch → merge su develop (`--no-ff`) → release su master.
+- `master` = live (il deploy parte da qui), `feature/NNN-slug` /
+  `fix/NNN-slug` per ogni spec o correzione. `develop` non esiste più
+  (cancellato da GitHub come head branch dopo l'ultimo merge in
+  master del 28/07): il flusso corrente è branch → merge diretto
+  su `master` (niente branch di integrazione intermedio).
+- Contenuto (nuove edizioni nei submodule): sync automatico su
+  `master` (`content: sync <instance>@<sha>` — vedi workflow
+  content-sync) — la CI valida, il deploy segue.
+- Codice: feature/fix branch → merge (`--no-ff`) diretto su `master`.
 - `pnpm gate` verde prima di ogni merge.
 
 ## Subagent
