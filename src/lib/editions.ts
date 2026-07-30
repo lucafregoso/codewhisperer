@@ -70,7 +70,9 @@ export async function getCorpus(): Promise<CorpusItem[]> {
             text: edition.data.slowFeed.body,
             anchor: "feed-lento",
             categories: edition.data.slowFeed.categories,
-            sources: [edition.data.slowFeed.source],
+            sources: edition.data.slowFeed.source
+              ? [edition.data.slowFeed.source]
+              : [],
           },
         ]
       : [];

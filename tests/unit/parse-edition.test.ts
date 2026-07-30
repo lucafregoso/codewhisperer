@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { EDITION_DIRS } from "../../src/lib/content-dirs";
 import { parseEdition } from "../../src/lib/parser/parse-edition";
 import { EditionParseError } from "../../src/lib/parser/types";
@@ -99,7 +99,23 @@ describe("parseEdition — contratto sulle fixture", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
     expect(edition.slowFeed?.title).toBe("Un pezzo dalla mailing list");
     expect(edition.slowFeed?.author).toBeUndefined();
-    expect(edition.slowFeed?.source.slug).toBe("lobste-rs");
+    expect(edition.slowFeed?.source?.slug).toBe("lobste-rs");
+  });
+
+  it("feed lento senza link fonte finale: logga, pubblica senza badge fonte", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const edition = parseEdition(
+      read(FIXTURES, "edge-feed-lento-senza-fonte.md"),
+    );
+    expect(edition.slowFeed?.title).toBe("Titolo senza fonte");
+    expect(edition.slowFeed?.author).toBe("Autore Ignoto");
+    expect(edition.slowFeed?.source).toBeUndefined();
+    expect(edition.slowFeed?.body).toContain("Hermes l'ha dimenticato");
+    expect(errorSpy).toHaveBeenCalledOnce();
+    expect(errorSpy.mock.calls[0]?.[0]).toContain(
+      "feed lento senza link fonte finale",
+    );
+    errorSpy.mockRestore();
   });
 
   it("le righe meta (Categorie, Fonti, Immagine) non finiscono nel corpo", () => {

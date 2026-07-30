@@ -48,7 +48,8 @@ export interface SlowFeed {
   author?: string;
   /** Corpo markdown inline */
   body: string;
-  source: SourceRef;
+  /** Assente se la riga fonte manca o è illeggibile (loggato, non bloccante) */
+  source?: SourceRef;
   categories: string[];
 }
 

@@ -29,7 +29,7 @@ const strings = t();
     )
   }
   <div class="slow-body" set:html={renderBlock(slowFeed.body)} />
-  <SourceBadge source={slowFeed.source} />
+  {slowFeed.source && <SourceBadge source={slowFeed.source} />}
 </section>
 
 <style>

@@ -7,6 +7,7 @@ import {
   type RadarItem,
   type RawEdition,
   type SlowFeed,
+  type SourceRef,
   type Story,
 } from "./types.ts";
 
@@ -218,26 +219,29 @@ function parseSlowFeed(lines: Line[]): SlowFeed | undefined {
     rest = rest.slice(authorMatch[0].length).trim();
   }
 
+  // La fonte del feed lento arricchisce ma non blocca: se manca o è
+  // illeggibile si logga e si pubblica comunque, senza badge fonte —
+  // mai un'intera edizione bloccata da un dettaglio recuperabile.
   const sourceMatch = rest.match(TRAILING_SOURCE);
+  let source: SourceRef | undefined;
   if (!sourceMatch) {
-    throw new EditionParseError(
-      `Feed lento senza link fonte finale (riga ${lineNumber})`,
-      lineNumber,
+    console.error(
+      `parseEdition: feed lento senza link fonte finale (riga ${lineNumber}) — pubblicato senza fonte.`,
     );
-  }
-  const source = parseSourceEntry(sourceMatch[1]!);
-  if (!source) {
-    throw new EditionParseError(
-      `Link fonte del feed lento illeggibile (riga ${lineNumber})`,
-      lineNumber,
-    );
+  } else {
+    source = parseSourceEntry(sourceMatch[1]!) ?? undefined;
+    if (!source) {
+      console.error(
+        `parseEdition: link fonte del feed lento illeggibile (riga ${lineNumber}) — pubblicato senza fonte.`,
+      );
+    }
   }
 
   return {
     title,
     ...(author ? { author } : {}),
-    body: rest.replace(TRAILING_SOURCE, "").trim(),
-    source,
+    body: (sourceMatch ? rest.replace(TRAILING_SOURCE, "") : rest).trim(),
+    ...(source ? { source } : {}),
     categories,
   };
 }

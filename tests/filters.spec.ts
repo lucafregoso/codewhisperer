@@ -8,7 +8,7 @@ const editions = corpusEditions();
 const allRefs = editions.flatMap((e) => [
   ...e.stories.flatMap((s) => s.sources),
   ...e.radar.map((r) => r.source),
-  ...(e.slowFeed ? [e.slowFeed.source] : []),
+  ...(e.slowFeed?.source ? [e.slowFeed.source] : []),
 ]);
 
 // La fonte più frequente del corpus: ha sicuramente una pagina e item.

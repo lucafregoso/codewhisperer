@@ -59,7 +59,9 @@ const editions = defineCollection({
           title: z.string().min(1),
           author: z.string().optional(),
           body: z.string().min(1),
-          source: sourceRef,
+          // Assente se la riga fonte manca o è illeggibile (parser:
+          // logga e pubblica comunque, senza badge fonte).
+          source: sourceRef.optional(),
           categories: z.array(slug),
         })
         .optional(),
