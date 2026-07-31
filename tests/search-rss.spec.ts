@@ -1,14 +1,16 @@
 import { test, expect } from "@playwright/test";
+import { site } from "../src/data/site";
+import { t } from "../src/i18n";
 import { corpusEditions } from "./helpers/corpus";
 
 // Contenuti derivati dal corpus al momento del run, mai hardcoded.
+const ui = t();
 const editions = corpusEditions();
 const latest = editions.at(-1)!;
 const totalStories = editions.reduce((n, e) => n + e.stories.length, 0);
 
 // Una parola distintiva dal titolo dell'ultima hero, per la ricerca.
-const searchWord = latest.stories[0]!.title
-  .split(/[^\p{L}\p{N}]+/u)
+const searchWord = latest.stories[0]!.title.split(/[^\p{L}\p{N}]+/u)
   .filter((w) => w.length >= 6)
   .sort((a, b) => b.length - a.length)[0];
 
@@ -20,7 +22,7 @@ test.describe("rss", () => {
     expect(res.status()).toBe(200);
     const xml = await res.text();
     expect(xml).toContain("<rss");
-    expect(xml).toContain("<language>it</language>");
+    expect(xml).toContain(`<language>${site.meta.lang}</language>`);
     expect(xml).toContain(`/edizioni/${latest.date}/#`);
     const items = xml.match(/<item>/g) ?? [];
     expect(items.length).toBeGreaterThanOrEqual(totalStories);
@@ -35,7 +37,9 @@ test.describe("ricerca", () => {
 
   test("/cerca/ con JS monta la UI Pagefind", async ({ page }) => {
     await page.goto("/cerca/");
-    await expect(page.getByRole("heading", { name: "Cerca" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: ui.nav.search }),
+    ).toBeVisible();
     await expect(page.locator("#search .pagefind-ui")).toBeVisible();
   });
 
@@ -56,7 +60,7 @@ test.describe("ricerca", () => {
     await page.goto("/cerca/");
     await expect(page.locator(".search-fallback")).toBeVisible();
     await expect(
-      page.locator(".search-paths a", { hasText: "Edizioni" }),
+      page.locator(".search-paths a", { hasText: ui.nav.editions }),
     ).toBeVisible();
     await context.close();
   });

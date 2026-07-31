@@ -25,25 +25,39 @@ import {
   IMAGES_DIR,
   PODCAST_DIRS,
 } from "../../src/lib/content-dirs";
+import { activeInstance, isDefaultInstance } from "../../src/lib/instance";
 import {
   FIXTURE_INSTANCE_DEFAULT,
   FIXTURE_INSTANCE_SECONDARY,
 } from "./fixtures/instances";
 
-describe("content-dirs — REGRESSION GUARD istanza default (nessuna env)", () => {
-  it("EDITION_DIRS: lane manuale + submodule, identico a pre-014", () => {
-    expect(EDITION_DIRS).toEqual(["input", "input/rassegnai-daily/editions"]);
+/**
+ * The active instance (and its `contentDir`) comes from the registry,
+ * which EdicolAI owns: the guard below asserts the RULE — manual lane
+ * first, and only for the default instance — against those values,
+ * never against a specific magazine's directory name. It therefore
+ * holds under any `INSTANCE`, including instances that do not exist
+ * yet.
+ */
+const active = activeInstance();
+const editions = `${active.contentDir}/editions`;
+const isDefault = isDefaultInstance(active);
+
+describe("content-dirs — REGRESSION GUARD istanza attiva", () => {
+  it("EDITION_DIRS: submodule dell'istanza, lane manuale davanti solo se default", () => {
+    expect(EDITION_DIRS).toEqual(isDefault ? ["input", editions] : [editions]);
   });
 
-  it("PODCAST_DIRS: identico a pre-014 (ordine = priorità)", () => {
-    expect(PODCAST_DIRS).toEqual([
-      "input/podcast",
-      "input/rassegnai-daily/editions/podcast",
-    ]);
+  it("PODCAST_DIRS: stessa regola, ordine = priorità", () => {
+    expect(PODCAST_DIRS).toEqual(
+      isDefault
+        ? ["input/podcast", `${editions}/podcast`]
+        : [`${editions}/podcast`],
+    );
   });
 
-  it("IMAGES_DIR: identico a pre-014", () => {
-    expect(IMAGES_DIR).toBe("input/rassegnai-daily/editions/images");
+  it("IMAGES_DIR: derivato dal contentDir dell'istanza", () => {
+    expect(IMAGES_DIR).toBe(`${editions}/images`);
   });
 });
 

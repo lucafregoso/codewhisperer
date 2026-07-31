@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { t } from "../src/i18n";
 import { formatFullDate } from "../src/lib/dates";
 import { corpusEditions } from "./helpers/corpus";
 
@@ -6,6 +7,7 @@ import { corpusEditions } from "./helpers/corpus";
 // dinamico (lo popolano gli scraper), nessuna edizione o contenuto
 // specifico è garantito. Dove una caratteristica può mancare, il test
 // fa skip esplicito.
+const ui = t();
 const editions = corpusEditions();
 const latest = editions.at(-1)!;
 
@@ -39,12 +41,14 @@ test.describe("homepage — ultima edizione", () => {
   }) => {
     test.skip(!complete, "nessuna edizione con radar+feed lento+copertura");
     await page.goto(`/edizioni/${complete!.date}/`);
-    await expect(page.getByRole("heading", { name: "Radar" })).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: /feed lento/i }),
+      page.getByRole("heading", { name: ui.edition.radar }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: /nota di copertura/i }),
+      page.getByRole("heading", { name: ui.edition.slowFeed }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: ui.edition.coverage }),
     ).toBeVisible();
     await expect(page.locator(".coverage")).toContainText(
       complete!.coverage!.tagline ?? String(complete!.coverage!.sourcesRead),
@@ -55,7 +59,7 @@ test.describe("homepage — ultima edizione", () => {
     test.skip(!viaRef, "nessuna fonte con attribuzione via nel corpus");
     await page.goto(`/edizioni/${viaEdition!.date}/`);
     const viaBadge = page.locator(".source-badge", {
-      hasText: `via ${viaRef!.via!.name}`,
+      hasText: `${ui.edition.via} ${viaRef!.via!.name}`,
     });
     await expect(viaBadge.first()).toBeVisible();
   });
