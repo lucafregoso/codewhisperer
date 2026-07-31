@@ -2,6 +2,8 @@ import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import type { Loader } from "astro/loaders";
+import { CATEGORY_RULES } from "../data/category-rules";
+import { withDerivedCategories } from "./category-derivation";
 import { EDITION_DIRS, IMAGES_DIR, PODCAST_DIRS } from "./content-dirs";
 import { parseEdition } from "./parser/parse-edition";
 import type { RawEdition } from "./parser/types";
@@ -95,9 +97,28 @@ export function editionsLoader(): Loader {
               const storyImage = resolveImage(s.image, label);
               return {
                 ...s,
+                categories: withDerivedCategories(
+                  s.categories,
+                  `${s.title}\n${s.body}`,
+                  CATEGORY_RULES,
+                ),
                 ...(storyImage ? { image: storyImage } : {}),
               };
             });
+
+            const radar = edition.radar.map((r) => ({
+              ...r,
+              categories: withDerivedCategories(r.categories, r.text, CATEGORY_RULES),
+            }));
+
+            const slowFeed = edition.slowFeed && {
+              ...edition.slowFeed,
+              categories: withDerivedCategories(
+                edition.slowFeed.categories,
+                `${edition.slowFeed.title}\n${edition.slowFeed.body}`,
+                CATEGORY_RULES,
+              ),
+            };
 
             const podcastFile = podcastFileFor(file, podcastFiles);
             const data = await parseData({
@@ -106,6 +127,8 @@ export function editionsLoader(): Loader {
                 ...edition,
                 ...(image ? { image } : {}),
                 stories,
+                radar,
+                ...(slowFeed ? { slowFeed } : {}),
                 file: label,
                 ...(podcastFile ? { podcast: { file: podcastFile } } : {}),
               },

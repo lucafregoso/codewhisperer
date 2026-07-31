@@ -1,19 +1,26 @@
 /**
- * Spec 014 — alias fonte per istanza (criterio 4).
+ * Spec 014 — per-instance source aliases (criterion 4).
  *
- * Dopo T3 `src/data/source-aliases.ts` diventa un selettore che
- * riesporta il modulo alias dell'istanza attiva da
- * `src/data/aliases/<slug>.ts`. Contratto:
+ * `src/data/source-aliases.ts` is a selector: it re-exports the alias
+ * module of the active instance from `src/data/aliases/<slug>.ts`.
  *
- * - istanza default (nessuna env): il selettore riespone gli alias
- *   attuali — spot check su chiavi significative del corpus reale.
- *   Import statico, verde oggi: REGRESSION GUARD.
- * - `src/data/aliases/rassegnai.ts` = contenuto curato attuale.
- * - `src/data/aliases/default.ts` = set VUOTI per le istanze senza file
- *   curato: solo tassonomia emergente (costituzione §2).
- * - Export names invariati ovunque: AGGREGATOR_SLUGS, AGGREGATOR_HOSTS,
- *   SOURCE_ALIASES (`src/lib/parser/sources.ts` non cambia import).
- *   Import dinamici per i moduli nuovi: rosso pulito finché mancano.
+ * Contract asserted here is SHAPE, never content — same discipline as
+ * tests/unit/category-rules.test.ts and category-aliases.test.ts. Each
+ * magazine has its own OPML: which outlets exist, and which of them
+ * act as aggregators, is emergent from a corpus produced outside this
+ * repo (constitution §2). Every module is therefore valid both empty
+ * (nothing curated: no "via" attribution, no normalization — the
+ * parser still resolves every label via `slugify()`) and populated.
+ *
+ * What must hold either way: canonical slugs everywhere, hosts as
+ * lowercase hostnames, and `AGGREGATOR_HOSTS` pointing at slugs that
+ * `AGGREGATOR_SLUGS` also knows — an aggregator recognized by host but
+ * not by slug would resolve inconsistently depending on the label.
+ * The BEHAVIOUR that consumes these maps is covered by
+ * tests/unit/sources.test.ts on a synthetic map.
+ *
+ * The selector import is static — REGRESSION GUARD on the default
+ * instance resolving to a real module.
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -22,40 +29,53 @@ import {
   SOURCE_ALIASES,
 } from "../../src/data/source-aliases";
 
-describe("source-aliases — istanza default riespone gli alias attuali", () => {
-  it("spot check AGGREGATOR_SLUGS (aggregatori del pattern via)", () => {
-    expect(AGGREGATOR_SLUGS.has("techmeme")).toBe(true);
-    expect(AGGREGATOR_SLUGS.has("hacker-news")).toBe(true);
-    expect(AGGREGATOR_SLUGS.has("lobste-rs")).toBe(true);
-  });
+const SLUG = /^[a-z0-9-]+$/;
 
-  it("spot check AGGREGATOR_HOSTS (host → slug aggregatore)", () => {
-    expect(AGGREGATOR_HOSTS["news.ycombinator.com"]).toBe("hacker-news");
-    expect(AGGREGATOR_HOSTS["techmeme.com"]).toBe("techmeme");
-  });
+function expectValidSourceAliases(mod: {
+  AGGREGATOR_SLUGS: Set<string>;
+  AGGREGATOR_HOSTS: Record<string, string>;
+  SOURCE_ALIASES: Record<string, string>;
+}) {
+  expect(mod.AGGREGATOR_SLUGS).toBeInstanceOf(Set);
+  for (const slug of mod.AGGREGATOR_SLUGS) expect(slug).toMatch(SLUG);
 
-  it("spot check SOURCE_ALIASES (grafie doppie osservate)", () => {
-    expect(SOURCE_ALIASES["lobste.rs"]).toBe("lobste-rs");
-    expect(SOURCE_ALIASES["hacker news"]).toBe("hacker-news");
+  for (const [host, slug] of Object.entries(mod.AGGREGATOR_HOSTS)) {
+    expect(host).toBe(host.toLowerCase());
+    expect(host).toMatch(/^[a-z0-9.-]+$/);
+    expect(slug).toMatch(SLUG);
+    expect(
+      mod.AGGREGATOR_SLUGS.has(slug),
+      `host ${host} → ${slug}: slug assente da AGGREGATOR_SLUGS`,
+    ).toBe(true);
+  }
+
+  for (const [alias, canonical] of Object.entries(mod.SOURCE_ALIASES)) {
+    expect(alias.trim()).not.toBe("");
+    expect(alias).toBe(alias.toLowerCase());
+    expect(canonical).toMatch(SLUG);
+    expect(canonical).not.toBe(alias);
+    // Nessuna catena: la risoluzione è un solo lookup.
+    expect(mod.SOURCE_ALIASES[canonical]).toBeUndefined();
+  }
+}
+
+describe("source-aliases — istanza default riespone il modulo curato", () => {
+  it("gli export sono vuoti oppure ben formati", () => {
+    expectValidSourceAliases({
+      AGGREGATOR_SLUGS,
+      AGGREGATOR_HOSTS,
+      SOURCE_ALIASES,
+    });
   });
 });
 
-describe("aliases/rassegnai — modulo curato dell'istanza storica (T3)", () => {
-  it("export names invariati e contenuto = alias attuali", async () => {
-    const mod: any = await import("../../src/data/aliases/rassegnai");
-    expect(mod.AGGREGATOR_SLUGS).toBeInstanceOf(Set);
-    expect(mod.AGGREGATOR_SLUGS.has("techmeme")).toBe(true);
-    expect(mod.AGGREGATOR_HOSTS["lobste.rs"]).toBe("lobste-rs");
-    expect(mod.SOURCE_ALIASES["hacker news"]).toBe("hacker-news");
-  });
-});
-
-describe("aliases/default — istanza nuova parte con set vuoti (T3)", () => {
-  it("export names invariati, tutti vuoti (tassonomia solo emergente, §2)", async () => {
-    const mod: any = await import("../../src/data/aliases/default");
-    expect(mod.AGGREGATOR_SLUGS).toBeInstanceOf(Set);
-    expect(mod.AGGREGATOR_SLUGS.size).toBe(0);
-    expect(mod.AGGREGATOR_HOSTS).toEqual({});
-    expect(mod.SOURCE_ALIASES).toEqual({});
+describe("aliases/<slug> — moduli per istanza (spec 014)", () => {
+  it.each([
+    ["rassegnai", "../../src/data/aliases/rassegnai"],
+    // Fallback per le istanze senza file curato (costituzione §2).
+    ["default", "../../src/data/aliases/default"],
+  ])("%s espone i tre export vuoti o ben formati", async (_slug, path) => {
+    const mod: any = await import(path);
+    expectValidSourceAliases(mod);
   });
 });
