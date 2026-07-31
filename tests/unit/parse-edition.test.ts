@@ -5,9 +5,25 @@ import { EDITION_DIRS } from "../../src/lib/content-dirs";
 import { parseEdition } from "../../src/lib/parser/parse-edition";
 import { EditionParseError } from "../../src/lib/parser/types";
 
+// Both normalization layers are NEUTRALIZED here: this file tests the
+// parse contract of docs/INGESTION.md, which must hold for every
+// magazine. Aggregators and alias spellings are curated per instance
+// from EdicolAI (one OPML each), so leaving the real maps in play would
+// make these fixtures pass or fail depending on which magazine is being
+// built. The normalization behaviour itself is covered on synthetic
+// maps in tests/unit/sources.test.ts and
+// tests/unit/parse-categories-aliases.test.ts.
+vi.mock("../../src/data/source-aliases", () => ({
+  AGGREGATOR_SLUGS: new Set<string>(),
+  AGGREGATOR_HOSTS: {},
+  SOURCE_ALIASES: {},
+}));
+vi.mock("../../src/data/category-aliases", () => ({ CATEGORY_ALIASES: {} }));
+
 const FIXTURES = join(process.cwd(), "tests", "fixtures");
 
-const read = (dir: string, file: string) => readFileSync(join(dir, file), "utf8");
+const read = (dir: string, file: string) =>
+  readFileSync(join(dir, file), "utf8");
 
 // Il corpus in input/ è dinamico: lo popolano gli scraper di Hermes, i
 // file possono essere rinominati e le edizioni future non sono
@@ -62,12 +78,17 @@ describe("parseEdition — contratto sulle fixture", () => {
     expect(edition.date).toBe("2026-07-01");
   });
 
-  it("il via-pattern è risolto (Techmeme (Reuters) → reuters via techmeme)", () => {
+  // Senza aggregatori curati (mock in testa al file) vale la regola di
+  // fallback del parser: la label esterna è la testata, quella interna
+  // resta comunque un'attribuzione via. Quale delle due sia
+  // l'aggregatore dipende dalla curatela dell'istanza ed è testato su
+  // mappa sintetica in tests/unit/sources.test.ts.
+  it("il pattern 'A (B)' produce un'attribuzione via: esterna = testata, interna = via", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
     const viaRef = edition.stories[0]?.sources.find((s) => s.via);
     expect(viaRef).toBeDefined();
-    expect(viaRef?.slug).toBe("reuters");
-    expect(viaRef?.via?.slug).toBe("techmeme");
+    expect(viaRef?.slug).toBe("techmeme");
+    expect(viaRef?.via?.slug).toBe("reuters");
   });
 
   it("la nota di copertura è completa", () => {

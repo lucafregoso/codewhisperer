@@ -1,9 +1,11 @@
 import { test, expect } from "@playwright/test";
+import { t } from "../src/i18n";
 import { corpusEditions } from "./helpers/corpus";
 
 // Le fonti sono emergenti dal corpus (dinamico, popolato dagli
 // scraper): i test derivano slug e attribuzioni da input/ al momento
 // del run, mai da fonti specifiche hardcoded.
+const ui = t();
 const editions = corpusEditions();
 const allRefs = editions.flatMap((e) => [
   ...e.stories.flatMap((s) => s.sources),
@@ -28,7 +30,9 @@ const viaRef = allRefs.find((r) => r.via);
 test.describe("filtri per fonte", () => {
   test("/fonte/ elenca le fonti emergenti dal corpus", async ({ page }) => {
     await page.goto("/fonte/");
-    await expect(page.getByRole("heading", { name: "Fonti" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: ui.filters.sources }),
+    ).toBeVisible();
     const rows = page.locator(".term-row");
     expect(await rows.count()).toBeGreaterThanOrEqual(1);
     await expect(
@@ -48,7 +52,9 @@ test.describe("filtri per fonte", () => {
     expect(await items.count()).toBeGreaterThan(0);
     await expect(
       items
-        .locator(".source-badge", { hasText: `via ${viaRef!.via!.name}` })
+        .locator(".source-badge", {
+          hasText: `${ui.edition.via} ${viaRef!.via!.name}`,
+        })
         .first(),
     ).toBeVisible();
   });
@@ -82,7 +88,7 @@ test.describe("filtri per categoria", () => {
     // Entrambi gli stati sono validi: il corpus è dinamico.
     await page.goto("/categoria/");
     await expect(
-      page.getByRole("heading", { name: "Categorie" }),
+      page.getByRole("heading", { name: ui.filters.categories }),
     ).toBeVisible();
     const emptyState = page.locator(".term-empty");
     const termRows = page.locator(".term-row");

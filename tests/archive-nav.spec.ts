@@ -1,9 +1,14 @@
 import { test, expect } from "@playwright/test";
+import { t } from "../src/i18n";
 import { formatMonthYear } from "../src/lib/dates";
 import { corpusDates } from "./helpers/corpus";
 
 // Il corpus è dinamico (lo popolano gli scraper): conteggi, date e mesi
 // arrivano da input/ al momento del run, mai da valori fissi.
+// Le stringhe UI arrivano da src/i18n (la lingua è impostata per
+// istanza da EdicolAI): mai literal italiani nei test.
+const ui = t();
+
 const dates = corpusDates(); // ascendenti
 const newestFirst = [...dates].reverse();
 const latestMonth = formatMonthYear(new Date(newestFirst[0]!));
@@ -13,7 +18,9 @@ test.describe("archivio e navigazione per data", () => {
     page,
   }) => {
     await page.goto("/edizioni/");
-    await expect(page.getByRole("heading", { name: "Edizioni" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: ui.archive.title }),
+    ).toBeVisible();
     await expect(
       page.locator(".archive-month-title", { hasText: latestMonth }),
     ).toBeVisible();
@@ -22,7 +29,7 @@ test.describe("archivio e navigazione per data", () => {
 
   test("il MastHead porta all'archivio da ogni pagina", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("link", { name: "Edizioni" }).click();
+    await page.getByRole("link", { name: ui.nav.editions }).click();
     await expect(page).toHaveURL(/\/edizioni\/$/);
   });
 
@@ -34,7 +41,7 @@ test.describe("archivio e navigazione per data", () => {
     const datesVisited: string[] = [];
     for (let hop = 0; hop < expected.length; hop++) {
       const prevLink = page.locator(".edition-nav-link", {
-        hasText: "Edizione precedente",
+        hasText: ui.edition.previous,
       });
       await expect(prevLink).toBeVisible();
       await prevLink.click();
@@ -46,17 +53,17 @@ test.describe("archivio e navigazione per data", () => {
     expect(datesVisited).toEqual(expected);
     // La più vecchia non ha "precedente" ma ha "successiva".
     await expect(
-      page.locator(".edition-nav-link", { hasText: "Edizione precedente" }),
+      page.locator(".edition-nav-link", { hasText: ui.edition.previous }),
     ).toHaveCount(0);
     await expect(
-      page.locator(".edition-nav-link", { hasText: "Edizione successiva" }),
+      page.locator(".edition-nav-link", { hasText: ui.edition.next }),
     ).toBeVisible();
   });
 
   test("la homepage non ha 'successiva' (è l'ultima)", async ({ page }) => {
     await page.goto("/");
     await expect(
-      page.locator(".edition-nav-link", { hasText: "Edizione successiva" }),
+      page.locator(".edition-nav-link", { hasText: ui.edition.next }),
     ).toHaveCount(0);
   });
 });

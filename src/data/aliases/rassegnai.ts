@@ -26,3 +26,10 @@ export const SOURCE_ALIASES: Record<string, string> = {
   "lobste.rs": "lobste-rs",
   "hacker news": "hacker-news",
 };
+
+/**
+ * Alias categoria → slug canonico (spec 015): parte vuota, si popola
+ * solo quando emergono doppioni reali nel corpus (nessuna tassonomia
+ * inventata, costituzione §2).
+ */
+export const CATEGORY_ALIASES: Record<string, string> = {};

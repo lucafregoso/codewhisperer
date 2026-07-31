@@ -1,63 +1,86 @@
-import { describe, expect, it } from "vitest";
-import { parseSourceLink, parseSourcesLine } from "../../src/lib/parser/sources";
+/**
+ * Behaviour of `src/lib/parser/sources.ts`: the "via" aggregator
+ * pattern and the alias normalization.
+ *
+ * `src/data/source-aliases` is MOCKED with a synthetic map, same
+ * technique as tests/unit/parse-categories-aliases.test.ts (`vi.mock`
+ * is file-scoped in Vitest). Reason: the real map is curated from a
+ * corpus that Hermes produces outside this repo — sources are
+ * emergent, one OPML per magazine (constitution §2). Asserting
+ * "Techmeme is an aggregator" would pin an editorial fact that can
+ * legitimately change, and turn a curation edit into a red test.
+ * What is under test here is the RULE (whoever is the aggregator ends
+ * up in `via`, in either order of the label), not who plays the part
+ * today.
+ */
+import { describe, expect, it, vi } from "vitest";
+
+vi.mock("../../src/data/source-aliases", () => ({
+  AGGREGATOR_SLUGS: new Set(["aggregatore"]),
+  AGGREGATOR_HOSTS: { "aggregatore.example": "aggregatore" },
+  SOURCE_ALIASES: { "testata.io": "testata-io" },
+}));
+
+const { parseSourceLink, parseSourcesLine } =
+  await import("../../src/lib/parser/sources");
 
 describe("parseSourceLink — pattern via", () => {
-  it("Techmeme (Reuters) con URL techmeme → source=reuters via=techmeme", () => {
+  it("Aggregatore (Testata) → source=testata via=aggregatore", () => {
     const ref = parseSourceLink(
-      "Techmeme (Reuters)",
-      "https://www.techmeme.com/260716/p2#a260716p2",
+      "Aggregatore (Testata)",
+      "https://aggregatore.example/260716/p2",
     );
-    expect(ref.slug).toBe("reuters");
-    expect(ref.name).toBe("Reuters");
-    expect(ref.via).toEqual({ name: "Techmeme", slug: "techmeme" });
+    expect(ref.slug).toBe("testata");
+    expect(ref.name).toBe("Testata");
+    expect(ref.via).toEqual({ name: "Aggregatore", slug: "aggregatore" });
   });
 
-  it("Reuters (Techmeme) con URL techmeme → identico (entrambi gli ordini)", () => {
+  it("Testata (Aggregatore) → identico (entrambi gli ordini)", () => {
     const ref = parseSourceLink(
-      "Reuters (Techmeme)",
-      "https://www.techmeme.com/260713/p2#a260713p2",
+      "Testata (Aggregatore)",
+      "https://aggregatore.example/260713/p2",
     );
-    expect(ref.slug).toBe("reuters");
-    expect(ref.via?.slug).toBe("techmeme");
+    expect(ref.slug).toBe("testata");
+    expect(ref.via?.slug).toBe("aggregatore");
   });
 
-  it("arXiv (Hacker News) con URL arxiv → source=arxiv via=hacker-news", () => {
+  it("l'aggregatore riconosciuto dal solo host resta via anche col link della testata", () => {
     const ref = parseSourceLink(
-      "arXiv (Hacker News)",
-      "https://arxiv.org/abs/2607.06377",
+      "Rivista (Aggregatore)",
+      "https://rivista.example/abs/2607.06377",
     );
-    expect(ref.slug).toBe("arxiv");
-    expect(ref.via?.slug).toBe("hacker-news");
+    expect(ref.slug).toBe("rivista");
+    expect(ref.via?.slug).toBe("aggregatore");
   });
 
   it("label semplice → slug emergente senza via", () => {
     const ref = parseSourceLink(
-      "TechCrunch",
-      "https://techcrunch.com/2026/07/15/example/",
+      "Quotidiano Tech",
+      "https://quotidiano.example/2026/07/15/example/",
     );
-    expect(ref.slug).toBe("techcrunch");
-    expect(ref.name).toBe("TechCrunch");
+    expect(ref.slug).toBe("quotidiano-tech");
+    expect(ref.name).toBe("Quotidiano Tech");
     expect(ref.via).toBeUndefined();
   });
 
-  it("normalizza gli alias (Lobste.rs → lobste-rs)", () => {
-    const ref = parseSourceLink("Lobste.rs", "https://lobste.rs/s/example");
-    expect(ref.slug).toBe("lobste-rs");
+  it("normalizza gli alias (grafia doppia → slug canonico)", () => {
+    const ref = parseSourceLink("Testata.io", "https://testata.io/s/example");
+    expect(ref.slug).toBe("testata-io");
   });
 });
 
 describe("parseSourcesLine", () => {
   const LINE =
-    "**Fonti:** [TechCrunch](https://techcrunch.com/a) — dettagli offerta, $50B; " +
-    "[Techmeme (Reuters)](https://www.techmeme.com/260714/p59#a260714p59) — conferma prezzo $60,50/azione.";
+    "**Fonti:** [Quotidiano Tech](https://quotidiano.example/a) — dettagli offerta, $50B; " +
+    "[Aggregatore (Testata)](https://aggregatore.example/260714/p59) — conferma prezzo $60,50/azione.";
 
   it("splitta su ; e preserva le note", () => {
     const refs = parseSourcesLine(LINE, 1);
     expect(refs).toHaveLength(2);
-    expect(refs[0]?.slug).toBe("techcrunch");
+    expect(refs[0]?.slug).toBe("quotidiano-tech");
     expect(refs[0]?.note).toContain("$50B");
-    expect(refs[1]?.slug).toBe("reuters");
-    expect(refs[1]?.via?.slug).toBe("techmeme");
+    expect(refs[1]?.slug).toBe("testata");
+    expect(refs[1]?.via?.slug).toBe("aggregatore");
     expect(refs[1]?.note).toContain("60,50");
   });
 
