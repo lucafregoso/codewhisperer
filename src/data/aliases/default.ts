@@ -11,3 +11,6 @@ export const AGGREGATOR_SLUGS = new Set<string>();
 export const AGGREGATOR_HOSTS: Record<string, string> = {};
 
 export const SOURCE_ALIASES: Record<string, string> = {};
+
+/** Alias categoria di default per le istanze SENZA file curato (spec 015): vuoto. */
+export const CATEGORY_ALIASES: Record<string, string> = {};

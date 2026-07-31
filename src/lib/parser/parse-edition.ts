@@ -1,3 +1,4 @@
+import { CATEGORY_ALIASES } from "../../data/category-aliases.ts";
 import { parseItalianDate } from "./italian-date.ts";
 import { slugify } from "./slug.ts";
 import { parseSourceEntry, parseSourcesLine } from "./sources.ts";
@@ -34,11 +35,19 @@ function sectionOf(heading: string): SectionKey | null {
   return null;
 }
 
+function canonicalCategorySlug(term: string): string {
+  return CATEGORY_ALIASES[term.trim().toLowerCase()] ?? slugify(term);
+}
+
 function parseCategories(raw: string): string[] {
-  return raw
-    .split(",")
-    .map((c) => slugify(c))
-    .filter(Boolean);
+  const result: string[] = [];
+  for (const part of raw.split(",")) {
+    const term = part.trim();
+    if (!term) continue;
+    const canonical = canonicalCategorySlug(term);
+    if (!result.includes(canonical)) result.push(canonical);
+  }
+  return result;
 }
 
 const CATEGORIE_LINE = /^\s*\*\*Categorie:\*\*\s*(.+)$/i;
