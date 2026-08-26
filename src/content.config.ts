@@ -37,7 +37,7 @@ const story = z.object({
 const radarItem = z.object({
   text: z.string().min(1),
   categories: z.array(slug),
-  source: sourceRef,
+  sources: z.array(sourceRef).min(1),
 });
 
 const editions = defineCollection({

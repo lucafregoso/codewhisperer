@@ -9,7 +9,7 @@ const ui = t();
 const editions = corpusEditions();
 const allRefs = editions.flatMap((e) => [
   ...e.stories.flatMap((s) => s.sources),
-  ...e.radar.map((r) => r.source),
+  ...e.radar.flatMap((r) => r.sources),
   ...(e.slowFeed?.source ? [e.slowFeed.source] : []),
 ]);
 

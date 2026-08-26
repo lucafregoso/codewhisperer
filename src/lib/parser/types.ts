@@ -40,7 +40,7 @@ export interface RadarItem {
   /** Testo markdown inline, senza il link fonte finale */
   text: string;
   categories: string[];
-  source: SourceRef;
+  sources: SourceRef[];
 }
 
 export interface SlowFeed {

@@ -50,6 +50,7 @@ Regole:
   negli H2 possono variare, contano le parole chiave.
 - L'autore del feed lento è opzionale ("di Autore." oppure formule come
   "dalla mailing list…").
+- **"Fonti lette"**: `X/Y` oppure `X su Y` sono equivalenti.
 
 ## Novità richiesta a Hermes: le categorie (opzionali ma desiderate)
 

@@ -104,6 +104,15 @@ describe("parseEdition — contratto sulle fixture", () => {
     expect(edition.coverage?.tagline).toContain("puoi ignorarlo");
   });
 
+  it("'Fonti lette: X su Y' è equivalente a 'X/Y'", () => {
+    const raw = read(FIXTURES, "edge-categorie.md").replace(
+      "Fonti lette: 10/12.",
+      "Fonti lette: 10 su 12.",
+    );
+    const edition = parseEdition(raw);
+    expect(edition.coverage).toMatchObject({ sourcesRead: 10, sourcesTotal: 12 });
+  });
+
   it("legge le categorie esplicite e il suffisso radar [cat:]", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
     expect(edition.stories[0]?.categories).toEqual([

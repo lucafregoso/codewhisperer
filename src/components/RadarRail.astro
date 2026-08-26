@@ -23,7 +23,13 @@ const strings = t();
         {items.map((item) => (
           <li class="radar-item">
             <p class="radar-text" set:html={renderInline(item.text)} />
-            <SourceBadge source={item.source} />
+            <ul class="source-list" role="list">
+              {item.sources.map((source) => (
+                <li>
+                  <SourceBadge source={source} />
+                </li>
+              ))}
+            </ul>
           </li>
         ))}
       </ul>
@@ -83,6 +89,22 @@ const strings = t();
   .radar-text {
     font-size: var(--text-body-sm);
     margin-bottom: var(--space-1);
+  }
+
+  .source-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-1);
+  }
+
+  .source-list li:not(:last-child)::after {
+    content: "·";
+    color: var(--ink-faint);
+    margin-left: var(--space-1);
   }
 
   /* Su signal-surface il faint non regge AA (4.29:1): si promuove

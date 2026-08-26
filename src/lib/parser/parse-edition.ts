@@ -65,6 +65,9 @@ const MD_IMAGE_PREFIX = /^\s*!\[/;
 const MD_IMAGE_LINE = /^\s*!\[([^\]]*)\]\(([^)\s]+)\)\s*$/;
 const RADAR_CAT_SUFFIX = /\s*\[cat:\s*([^\]]+)\]\s*$/i;
 const TRAILING_SOURCE = /\s+[—–]\s+(\[[^\]]+\]\([^)\s]+\))\s*$/;
+// Radar item con più fonti, come le storie: "— [A](u); [B](u)".
+const TRAILING_SOURCES =
+  /\s+[—–]\s+((?:\[[^\]]+\]\([^)\s]+\)\s*;\s*)*\[[^\]]+\]\([^)\s]+\))\s*$/;
 
 function parseStories(lines: Line[]): Story[] {
   const stories: Story[] = [];
@@ -171,24 +174,29 @@ function parseRadar(lines: Line[]): RadarItem[] {
       text = text.replace(RADAR_CAT_SUFFIX, "").trim();
     }
 
-    const sourceMatch = text.match(TRAILING_SOURCE);
+    const sourceMatch = text.match(TRAILING_SOURCES);
     if (!sourceMatch) {
       throw new EditionParseError(
         `Radar item senza link fonte finale "— [Fonte](url)" (riga ${line.number})`,
         line.number,
       );
     }
-    const source = parseSourceEntry(sourceMatch[1]!);
-    if (!source) {
+    const sources = sourceMatch[1]!
+      .split(";")
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+      .map((entry) => parseSourceEntry(entry))
+      .filter((ref): ref is SourceRef => ref !== null);
+    if (sources.length === 0) {
       throw new EditionParseError(
         `Link fonte del radar illeggibile (riga ${line.number})`,
         line.number,
       );
     }
     items.push({
-      text: text.replace(TRAILING_SOURCE, "").trim(),
+      text: text.replace(TRAILING_SOURCES, "").trim(),
       categories,
-      source,
+      sources,
     });
   }
   return items;
@@ -263,7 +271,7 @@ function parseCoverage(lines: Line[]): Coverage | undefined {
   const firstLine = lines.find((l) => l.text.trim().length > 0);
   const lineNumber = firstLine?.number ?? 1;
 
-  const readMatch = text.match(/Fonti lette:\s*(\d+)\s*\/\s*(\d+)/i);
+  const readMatch = text.match(/Fonti lette:\s*(\d+)\s*(?:\/|su)\s*(\d+)/i);
   const collectedMatch = text.match(
     /Item raccolti:\s*(\d+);\s*storie pubblicate:\s*(\d+);\s*scartati di proposito:\s*(\d+)/i,
   );
