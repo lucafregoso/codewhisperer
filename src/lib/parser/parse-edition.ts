@@ -65,9 +65,14 @@ const MD_IMAGE_PREFIX = /^\s*!\[/;
 const MD_IMAGE_LINE = /^\s*!\[([^\]]*)\]\(([^)\s]+)\)\s*$/;
 const RADAR_CAT_SUFFIX = /\s*\[cat:\s*([^\]]+)\]\s*$/i;
 const TRAILING_SOURCE = /\s+[—–]\s+(\[[^\]]+\]\([^)\s]+\))\s*$/;
-// Radar item con più fonti, come le storie: "— [A](u); [B](u)".
-const TRAILING_SOURCES =
-  /\s+[—–]\s+((?:\[[^\]]+\]\([^)\s]+\)\s*;\s*)*\[[^\]]+\]\([^)\s]+\))\s*$/;
+// Radar item con più fonti, come le storie: "— [A](u) — nota; [B](u)".
+// Ogni voce è "[Nome](url)" con nota "— …" opzionale, come su **Fonti:**.
+const RADAR_SOURCE_ENTRY = /\[[^\]]+\]\([^)\s]+\)(?:\s*[—–]\s*[^;]*)?/.source;
+// Punto finale di frase incollato all'url (senza spazio) è tollerato e
+// scartato insieme al resto della coda fonte.
+const TRAILING_SOURCES = new RegExp(
+  `\\s+[—–]\\s+(${RADAR_SOURCE_ENTRY}(?:\\s*;\\s*${RADAR_SOURCE_ENTRY})*)\\.?\\s*$`,
+);
 
 function parseStories(lines: Line[]): Story[] {
   const stories: Story[] = [];
@@ -174,12 +179,17 @@ function parseRadar(lines: Line[]): RadarItem[] {
       text = text.replace(RADAR_CAT_SUFFIX, "").trim();
     }
 
+    // Un radar item senza fonte (es. "nessun item oggi") arricchisce ma
+    // non blocca — come il feed lento: si logga e si pubblica senza
+    // badge fonte, mai un'intera edizione bloccata da un dettaglio
+    // recuperabile.
     const sourceMatch = text.match(TRAILING_SOURCES);
     if (!sourceMatch) {
-      throw new EditionParseError(
-        `Radar item senza link fonte finale "— [Fonte](url)" (riga ${line.number})`,
-        line.number,
+      console.error(
+        `parseEdition: radar item senza link fonte finale (riga ${line.number}) — pubblicato senza fonte.`,
       );
+      items.push({ text, categories, sources: [] });
+      continue;
     }
     const sources = sourceMatch[1]!
       .split(";")
