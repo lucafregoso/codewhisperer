@@ -113,6 +113,35 @@ describe("parseEdition — contratto sulle fixture", () => {
     expect(edition.coverage).toMatchObject({ sourcesRead: 10, sourcesTotal: 12 });
   });
 
+  it("un radar item con più fonti (anche con nota sulla non-prima) le legge tutte", () => {
+    const raw = read(FIXTURES, "edge-categorie.md").replace(
+      "Item radar categorizzato — [BleepingComputer](https://www.bleepingcomputer.com/news/x/) [cat: sicurezza]",
+      "Item radar categorizzato — [BleepingComputer](https://www.bleepingcomputer.com/news/x/); [Ars Technica](https://arstechnica.com/z/) — nota sulla seconda fonte. [cat: sicurezza]",
+    );
+    const edition = parseEdition(raw);
+    const sources = edition.radar[0]?.sources ?? [];
+    expect(sources).toHaveLength(2);
+    expect(sources[0]?.slug).toBe("bleepingcomputer");
+    expect(sources[1]?.slug).toBe("ars-technica");
+    expect(sources[1]?.note).toBe("nota sulla seconda fonte");
+  });
+
+  it("un radar item senza link fonte: logga, pubblica senza fonti", () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const raw = read(FIXTURES, "edge-categorie.md").replace(
+      "- Item radar senza categoria — [Ars Technica](https://arstechnica.com/y/)",
+      "- Giornata senza item: nessuna fonte da citare oggi",
+    );
+    const edition = parseEdition(raw);
+    const item = edition.radar.find((r) => r.text.startsWith("Giornata"));
+    expect(item?.sources).toEqual([]);
+    expect(errorSpy).toHaveBeenCalledOnce();
+    expect(errorSpy.mock.calls[0]?.[0]).toContain(
+      "radar item senza link fonte finale",
+    );
+    errorSpy.mockRestore();
+  });
+
   it("legge le categorie esplicite e il suffisso radar [cat:]", () => {
     const edition = parseEdition(read(FIXTURES, "edge-categorie.md"));
     expect(edition.stories[0]?.categories).toEqual([
