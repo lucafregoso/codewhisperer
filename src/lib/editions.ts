@@ -58,7 +58,7 @@ export async function getCorpus(): Promise<CorpusItem[]> {
         kind: "radar",
         text: item.text,
         categories: item.categories,
-        sources: [item.source],
+        sources: item.sources,
       }),
     );
     const slow = edition.data.slowFeed
